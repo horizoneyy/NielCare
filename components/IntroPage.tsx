@@ -189,7 +189,7 @@ export default function IntroPage() {
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
 
-  // Scroll reveal observer (Blur-to-clear ultra smooth ala diyondev.my.id)
+  // Scroll reveal observer: dua arah (scrolling atas ke bawah & bawah ke atas tetap ada efek blur-to-clear)
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -197,21 +197,28 @@ export default function IntroPage() {
           if (entry.isIntersecting) {
             entry.target.classList.add("is-visible");
           } else {
-            // Re-blur hanya jika keluar ke bawah (scrolling ke atas)
-            if (entry.boundingClientRect.top > 0) {
-              entry.target.classList.remove("is-visible");
-            }
+            // Reset status saat elemen keluar viewport (baik lewat atas saat scroll ke bawah,
+            // maupun lewat bawah saat scroll ke atas), sehingga saat di-scroll kembali
+            // efek motion blur muncul kembali secara mulus di kedua arah.
+            entry.target.classList.remove("is-visible");
           }
         });
       },
       {
-        threshold: 0.06,
+        threshold: 0.08,
         rootMargin: "0px 0px -40px 0px",
       }
     );
 
     const revealElements = document.querySelectorAll(".reveal-blur");
-    revealElements.forEach((el) => observer.observe(el));
+    revealElements.forEach((el) => {
+      // Inisialisasi awal: jika elemen sudah ada di dalam viewport saat load, langsung aktifkan
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        el.classList.add("is-visible");
+      }
+      observer.observe(el);
+    });
 
     return () => {
       revealElements.forEach((el) => observer.unobserve(el));
@@ -489,9 +496,23 @@ export default function IntroPage() {
               </div>
             </div>
 
-            {/* Right Visual: Clean Expansive Video Gigi Baru (Tanpa Lingkaran Aura) */}
-            <div className="lg:col-span-7 relative flex items-center justify-center lg:justify-end animate-fade-in">
-              <div className="w-full max-w-xl lg:max-w-2xl xl:max-w-3xl flex items-center justify-center">
+            {/* Right Visual: Seamless 3D Floating Tooth (Menyatu alami dengan background, tanpa card/border) */}
+            <div className="lg:col-span-7 relative flex items-center justify-center lg:justify-end animate-fade-in select-none">
+              {/* Ambient radial spotlight halus untuk menyatukan background hero dengan video gigi */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 max-w-2xl mx-auto rounded-full bg-radial from-white via-emerald-100/30 to-transparent blur-3xl pointer-events-none scale-110"
+              />
+
+              <div
+                className="w-full max-w-xl lg:max-w-2xl xl:max-w-3xl flex items-center justify-center relative"
+                style={{
+                  maskImage:
+                    "radial-gradient(ellipse 72% 72% at 50% 50%, #000 36%, rgba(0,0,0,0.85) 52%, rgba(0,0,0,0.2) 68%, transparent 78%)",
+                  WebkitMaskImage:
+                    "radial-gradient(ellipse 72% 72% at 50% 50%, #000 36%, rgba(0,0,0,0.85) 52%, rgba(0,0,0,0.2) 68%, transparent 78%)",
+                }}
+              >
                 <video
                   ref={videoRef}
                   autoPlay
@@ -504,7 +525,7 @@ export default function IntroPage() {
                     v.muted = true;
                     v.play().catch(() => {});
                   }}
-                  className="w-full h-auto max-h-[580px] object-contain rounded-2xl drop-shadow-xl"
+                  className="w-full h-auto max-h-[580px] object-contain transition-all duration-500"
                 >
                   <source src="/videos/gemini_generated_video_1e5ea4ae.mp4" type="video/mp4" />
                   <source src="/gemini_generated_video_1e5ea4ae.mp4" type="video/mp4" />
