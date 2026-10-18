@@ -60,14 +60,6 @@ export default function PatientProfilePage() {
                 <p className="text-lg font-bold text-slate-900 mt-1">{user?.full_name || "-"}</p>
               </div>
               <div>
-                <Label className="text-[11px] font-semibold tracking-widest text-slate-500 uppercase">Username</Label>
-                <p className="text-lg font-semibold text-slate-700 mt-1">@{user?.username || "-"}</p>
-              </div>
-              <div>
-                <Label className="text-[11px] font-semibold tracking-widest text-slate-500 uppercase">Alamat Email</Label>
-                <p className="text-lg font-semibold text-slate-700 mt-1">{user?.email || "-"}</p>
-              </div>
-              <div>
                 <Label className="text-[11px] font-semibold tracking-widest text-slate-500 uppercase">Nomor Telepon</Label>
                 <p className="text-lg font-semibold text-slate-700 mt-1">{user?.phone || "-"}</p>
               </div>
@@ -79,18 +71,6 @@ export default function PatientProfilePage() {
                 <Label className="text-[11px] font-semibold tracking-widest text-slate-500 uppercase">Tanggal Lahir</Label>
                 <p className="text-lg font-semibold text-slate-700 mt-1">
                   {user?.date_of_birth ? new Date(user.date_of_birth).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : "-"}
-                </p>
-              </div>
-              <div>
-                <Label className="text-[11px] font-semibold tracking-widest text-slate-500 uppercase">Berat Badan</Label>
-                <p className="text-lg font-semibold text-slate-700 mt-1">
-                  {user?.weight_kg ? `${user.weight_kg} kg` : "-"}
-                </p>
-              </div>
-              <div>
-                <Label className="text-[11px] font-semibold tracking-widest text-slate-500 uppercase">Tinggi Badan</Label>
-                <p className="text-lg font-semibold text-slate-700 mt-1">
-                  {user?.height_cm ? `${user.height_cm} cm` : "-"}
                 </p>
               </div>
             </div>
