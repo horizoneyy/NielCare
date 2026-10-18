@@ -45,6 +45,75 @@ export default function IntroPage() {
     }
   }, []);
 
+  // ─── TYPEWRITER EFFECT: HERO HEADLINE ("Your Smile, Our Priority") ───
+  const [heroTyped1, setHeroTyped1] = useState("");
+  const [heroTyped2, setHeroTyped2] = useState("");
+  const [heroStep, setHeroStep] = useState<"line1" | "line2" | "done">("line1");
+
+  useEffect(() => {
+    const text1 = "Your Smile,";
+    const text2 = "Our Priority";
+    let i1 = 0;
+    let i2 = 0;
+
+    const timer1 = setInterval(() => {
+      i1++;
+      setHeroTyped1(text1.slice(0, i1));
+      if (i1 >= text1.length) {
+        clearInterval(timer1);
+        setTimeout(() => {
+          setHeroStep("line2");
+          const timer2 = setInterval(() => {
+            i2++;
+            setHeroTyped2(text2.slice(0, i2));
+            if (i2 >= text2.length) {
+              clearInterval(timer2);
+              setHeroStep("done");
+            }
+          }, 50);
+        }, 160);
+      }
+    }, 50);
+
+    return () => clearInterval(timer1);
+  }, []);
+
+  // ─── TYPEWRITER EFFECT: ABOUT MISSION QUOTE ───
+  const fullQuoteText =
+    "Help you achieve the best dental care easily, quickly, and professionally for a lifetime of healthy, confident smiles.";
+  const quoteCardRef = useRef<HTMLDivElement>(null);
+  const [quoteChars, setQuoteChars] = useState(0);
+  const [isTypingQuote, setIsTypingQuote] = useState(false);
+  const [quoteStarted, setQuoteStarted] = useState(false);
+
+  useEffect(() => {
+    if (!quoteCardRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !quoteStarted) {
+            setQuoteStarted(true);
+            setIsTypingQuote(true);
+            let current = 0;
+            const total = fullQuoteText.length;
+            const timer = setInterval(() => {
+              current++;
+              setQuoteChars(current);
+              if (current >= total) {
+                clearInterval(timer);
+                setIsTypingQuote(false);
+              }
+            }, 18);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(quoteCardRef.current);
+    return () => observer.disconnect();
+  }, [quoteStarted]);
+
   // Scroll spy to update active indicator
   useEffect(() => {
     const handleScroll = () => {
@@ -366,15 +435,34 @@ export default function IntroPage() {
       >
         <div className="min-h-[calc(100vh-5rem)] flex items-center py-8 md:py-12 px-4 sm:px-8 max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full">
-            {/* Left Text Content */}
+            {/* Left Text Content with Typewriter Headline */}
             <div className="lg:col-span-5 space-y-6 z-10 animate-fade-in">
-              <div className="space-y-1">
+              <div className="space-y-1 min-h-[120px] sm:min-h-[160px] md:min-h-[190px] flex flex-col justify-center">
                 <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
-                  Your Smile,
+                  {heroTyped1}
+                  {heroStep === "line1" && (
+                    <span className="inline-block w-[3px] sm:w-[4px] h-[0.85em] bg-emerald-600 ml-1.5 animate-pulse align-middle" />
+                  )}
                 </h1>
                 <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05]">
-                  <span className="text-emerald-600">Our</span>{" "}
-                  <span className="text-slate-900">Priority</span>
+                  {heroTyped2.length > 0 && (
+                    <>
+                      <span className="text-emerald-600">
+                        {heroTyped2.slice(0, Math.min(heroTyped2.length, 3))}
+                      </span>
+                      {heroTyped2.length > 3 && (
+                        <>
+                          {" "}
+                          <span className="text-slate-900">
+                            {heroTyped2.slice(4)}
+                          </span>
+                        </>
+                      )}
+                    </>
+                  )}
+                  {heroStep === "line2" && (
+                    <span className="inline-block w-[3px] sm:w-[4px] h-[0.85em] bg-emerald-600 ml-1.5 animate-pulse align-middle" />
+                  )}
                 </h1>
               </div>
 
@@ -438,22 +526,40 @@ export default function IntroPage() {
           </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            {/* Left Card: Mission Quote by Andi Daniel */}
-            <div className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 flex flex-col justify-between shadow-xs reveal-blur reveal-delay-1">
+            {/* Left Card: Mission Quote by Andi Daniel with Typewriter Effect */}
+            <div
+              ref={quoteCardRef}
+              className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 flex flex-col justify-between shadow-xs reveal-blur reveal-delay-1"
+            >
               <div className="space-y-6">
-                <h3 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-slate-900 leading-snug tracking-tight">
-                  Help you achieve the best dental care easily, quickly, and professionally for a lifetime of{" "}
-                  <span className="text-emerald-600 font-bold">healthy, confident smiles</span>.
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-slate-900 leading-snug tracking-tight min-h-[140px] sm:min-h-[160px]">
+                  {quoteStarted ? (
+                    <>
+                      <span>{fullQuoteText.slice(0, Math.min(quoteChars, 91))}</span>
+                      {quoteChars > 91 && (
+                        <span className="text-emerald-600 font-bold">
+                          {fullQuoteText.slice(91, quoteChars)}
+                        </span>
+                      )}
+                      {isTypingQuote && (
+                        <span className="inline-block w-[2.5px] sm:w-[3px] h-[0.85em] bg-emerald-600 ml-1 animate-pulse align-middle" />
+                      )}
+                    </>
+                  ) : (
+                    <span className="opacity-0">
+                      Help you achieve the best dental care easily, quickly, and professionally for a lifetime of healthy, confident smiles.
+                    </span>
+                  )}
                 </h3>
               </div>
 
               <div className="pt-8 text-right">
-                <p className="text-sm font-bold text-slate-800 tracking-wide">— drg. Andi Daniel</p>
+                <p className="text-sm font-bold text-slate-800 tracking-wide">— Andi Daniel</p>
               </div>
             </div>
 
-            {/* Right Card: Penjelasan Sistem NielCare Dental */}
-            <div className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-xs reveal-blur reveal-delay-2 space-y-6">
+            {/* Right Card: Penjelasan Sistem NielCare Dental (Poin-Poin Muncul Satu per Satu) */}
+            <div className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-xs space-y-6">
               <div className="space-y-5">
                 <h4 className="text-lg font-bold text-slate-900 tracking-tight">
                   Sistem Manajemen Klinik Modern NielCare
@@ -463,7 +569,7 @@ export default function IntroPage() {
                 </p>
 
                 <div className="space-y-3.5 pt-1">
-                  <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+                  <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-100 reveal-blur reveal-delay-1">
                     <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 text-xs font-bold">
                       01
                     </div>
@@ -475,7 +581,7 @@ export default function IntroPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+                  <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-100 reveal-blur reveal-delay-3">
                     <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 text-xs font-bold">
                       02
                     </div>
@@ -487,7 +593,7 @@ export default function IntroPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+                  <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-100 reveal-blur reveal-delay-5">
                     <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 text-xs font-bold">
                       03
                     </div>
