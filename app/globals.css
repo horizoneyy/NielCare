@@ -68,6 +68,85 @@
   .animate-slide-in-right {
     animation: slideInRight 0.3s ease-out;
   }
+
+  .reveal-blur {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(32px);
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, filter, transform;
+  }
+
+  .reveal-blur.is-visible {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+
+  .animate-aura {
+    animation: auraPulse 8s ease-in-out infinite;
+  }
+
+  .animate-hologram-float {
+    animation: hologramFloat 6s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .animate-hologram-scan {
+    animation: hologramScan 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .animate-hologram-glow {
+    animation: hologramGlow 4s ease-in-out infinite;
+  }
+}
+
+@keyframes hologramFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-16px) rotate(1deg) scale(1.02);
+  }
+}
+
+@keyframes hologramScan {
+  0% {
+    top: -5%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.95;
+  }
+  85% {
+    opacity: 0.95;
+  }
+  100% {
+    top: 105%;
+    opacity: 0;
+  }
+}
+
+@keyframes hologramGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(6, 182, 212, 0.4)) drop-shadow(0 0 45px rgba(16, 185, 129, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 35px rgba(6, 182, 212, 0.7)) drop-shadow(0 0 75px rgba(16, 185, 129, 0.5));
+  }
+}
+
+@keyframes auraPulse {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.08);
+  }
 }
 
 @keyframes float {
