@@ -4,7 +4,7 @@ import { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2, AlertCircle, ArrowRight, Eye, EyeOff, ShieldCheck, ArrowLeft } from "lucide-react";
+import { Loader2, AlertCircle, ArrowRight, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -96,9 +96,6 @@ function LoginFormContent() {
         </Link>
 
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner">
-            <ShieldCheck className="w-6 h-6" />
-          </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Masuk ke Akun Anda</h1>
           <p className="text-xs text-slate-500 mt-1">
             Silakan masukkan email dan kata sandi Anda untuk melanjutkan
@@ -163,15 +160,6 @@ function LoginFormContent() {
             )}
           </button>
         </form>
-
-        <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-          <p className="text-xs text-slate-500">
-            Belum memiliki akun pasien?{" "}
-            <Link href="/register" className="font-semibold text-emerald-700 hover:text-emerald-800 underline">
-              Daftar Pasien Baru
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );
