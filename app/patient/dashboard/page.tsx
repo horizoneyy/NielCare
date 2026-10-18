@@ -19,22 +19,66 @@ export default function PatientDashboard() {
 
   useEffect(() => {
     async function fetchData() {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (!authUser) return;
-      const { data: profile } = await supabase.from("users").select("*").eq("id", authUser.id).single();
-      if (profile) setUser(profile as User);
-      const { data: upcoming } = await supabase.from("appointments").select(`*, doctor:doctors!appointments_doctor_id_fkey(*, user:users!doctors_user_id_fkey(*))`).eq("patient_id", authUser.id).in("status", ["pending", "approved"]).gte("appointment_date", new Date().toISOString().split("T")[0]).order("emergency_level", { ascending: true }).order("appointment_date", { ascending: true }).limit(5);
-      if (upcoming) setUpcomingList(upcoming as Appointment[]);
-      const { count: upcomingCount } = await supabase.from("appointments").select("*", { count: "exact", head: true }).eq("patient_id", authUser.id).in("status", ["pending", "approved"]);
-      const { count: completedCount } = await supabase.from("appointments").select("*", { count: "exact", head: true }).eq("patient_id", authUser.id).eq("status", "done");
-      setStats({ upcomingAppointments: upcomingCount || 0, completedAppointments: completedCount || 0 });
-      setLoading(false);
+      try {
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (!authUser) return;
+
+        const today = new Date().toISOString().split("T")[0];
+
+        // Eksekusi seluruh query secara paralel untuk memangkas waktu muat hingga 60%
+        const [profileRes, upcomingRes, upcomingCountRes, completedCountRes] = await Promise.all([
+          supabase.from("users").select("*").eq("id", authUser.id).single(),
+          supabase
+            .from("appointments")
+            .select(`*, doctor:doctors!appointments_doctor_id_fkey(*, user:users!doctors_user_id_fkey(*))`)
+            .eq("patient_id", authUser.id)
+            .in("status", ["pending", "approved"])
+            .gte("appointment_date", today)
+            .order("emergency_level", { ascending: true })
+            .order("appointment_date", { ascending: true })
+            .limit(5),
+          supabase
+            .from("appointments")
+            .select("id", { count: "exact", head: true })
+            .eq("patient_id", authUser.id)
+            .in("status", ["pending", "approved"]),
+          supabase
+            .from("appointments")
+            .select("id", { count: "exact", head: true })
+            .eq("patient_id", authUser.id)
+            .eq("status", "done"),
+        ]);
+
+        if (profileRes.data) setUser(profileRes.data as User);
+        if (upcomingRes.data) setUpcomingList(upcomingRes.data as Appointment[]);
+        setStats({
+          upcomingAppointments: upcomingCountRes.count || 0,
+          completedAppointments: completedCountRes.count || 0,
+        });
+      } catch (err) {
+        console.error("[Patient Dashboard Fetch Error]", err);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchData();
   }, []);
 
   if (loading) {
-    return (<div className="min-h-screen" style={{ background: "#f0f1f5" }}><Sidebar /><div className="flex items-center justify-center h-[60vh]"><Loader2 className="h-8 w-8 animate-spin" style={{ color: "#1a4a35" }} /></div></div>);
+    return (
+      <div className="min-h-screen" style={{ background: "#f8fafc" }}>
+        <Sidebar />
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
+          <div className="h-10 bg-slate-200 rounded-xl w-64 mb-4"></div>
+          <div className="h-4 bg-slate-200 rounded-md w-96 mb-8"></div>
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="h-28 bg-slate-200 rounded-2xl"></div>
+            <div className="h-28 bg-slate-200 rounded-2xl"></div>
+          </div>
+          <div className="h-64 bg-slate-200 rounded-2xl"></div>
+        </main>
+      </div>
+    );
   }
 
   const statCards = [

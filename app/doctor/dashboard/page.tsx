@@ -23,42 +23,48 @@ export default function DoctorDashboard() {
 
   useEffect(() => {
     async function fetchData() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-      const today = new Date().toISOString().split("T")[0];
+        const today = new Date().toISOString().split("T")[0];
 
-      // Fetch today's appointments list (for display cards) via existing API
-      const { data: doctor } = await supabase
-        .from("doctors")
-        .select("id")
-        .eq("user_id", user.id)
-        .single();
+        // Fetch doctor record
+        const { data: doctor } = await supabase
+          .from("doctors")
+          .select("id")
+          .eq("user_id", user.id)
+          .single();
 
-      if (!doctor) { setLoading(false); return; }
+        if (!doctor) { setLoading(false); return; }
 
-      // Fetch today's appointment list for the card display
-      const apptRes = await fetch(`/api/appointments?doctor_id=${doctor.id}&date=${today}`);
-      if (apptRes.ok) {
-        const apptData = await apptRes.json();
-        apptData.sort((a: Appointment, b: Appointment) => a.slot_time.localeCompare(b.slot_time));
-        setTodayList(apptData);
+        // Fetch appointments dan stats secara paralel via Promise.all
+        const [apptRes, statsRes] = await Promise.all([
+          fetch(`/api/appointments?doctor_id=${doctor.id}&date=${today}`),
+          fetch("/api/doctor/stats"),
+        ]);
+
+        if (apptRes.ok) {
+          const apptData = await apptRes.json();
+          apptData.sort((a: Appointment, b: Appointment) => a.slot_time.localeCompare(b.slot_time));
+          setTodayList(apptData);
+        }
+
+        if (statsRes.ok) {
+          const s = await statsRes.json();
+          setStats({
+            todayAppointments: s.todayAppointments,
+            pendingAppointments: s.pendingAppointments,
+            totalPatients: s.totalPatients,
+            completedThisMonth: s.completedThisMonth,
+            earningsThisMonth: s.earningsThisMonth,
+          });
+        }
+      } catch (err) {
+        console.error("[Doctor Dashboard Fetch Error]", err);
+      } finally {
+        setLoading(false);
       }
-
-      // Fetch all dashboard stats via server-side API (bypasses RLS)
-      const statsRes = await fetch("/api/doctor/stats");
-      if (statsRes.ok) {
-        const s = await statsRes.json();
-        setStats({
-          todayAppointments: s.todayAppointments,
-          pendingAppointments: s.pendingAppointments,
-          totalPatients: s.totalPatients,
-          completedThisMonth: s.completedThisMonth,
-          earningsThisMonth: s.earningsThisMonth,
-        });
-      }
-
-      setLoading(false);
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,11 +72,18 @@ export default function DoctorDashboard() {
 
   if (loading)
     return (
-      <div className="min-h-screen" style={{ background: "#f0f1f5" }}>
+      <div className="min-h-screen" style={{ background: "#f8fafc" }}>
         <Sidebar />
-        <div className="flex items-center justify-center h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin" style={{ color: "#1e40af" }} />
-        </div>
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
+          <div className="h-10 bg-slate-200 rounded-xl w-64 mb-6"></div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="h-28 bg-slate-200 rounded-2xl"></div>
+            <div className="h-28 bg-slate-200 rounded-2xl"></div>
+            <div className="h-28 bg-slate-200 rounded-2xl"></div>
+            <div className="h-28 bg-slate-200 rounded-2xl"></div>
+          </div>
+          <div className="h-72 bg-slate-200 rounded-2xl"></div>
+        </main>
       </div>
     );
 

@@ -32,31 +32,44 @@ export function Sidebar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     async function getUser() {
+      // Jika user sudah terload, jangan query ulang
+      if (user) return;
+
       const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (authUser) {
+      if (authUser && isMounted) {
+        // Ambil dari metadata dulu agar instan
+        const pathRole = pathname.startsWith("/owner") ? "owner"
+          : pathname.startsWith("/doctor") ? "doctor"
+          : "patient";
+
+        const initialUser: User = {
+          id: authUser.id,
+          email: authUser.email || "",
+          username: authUser.email?.split("@")[0] || "user",
+          role: authUser.user_metadata?.role || pathRole,
+          full_name: authUser.user_metadata?.full_name || authUser.email?.split("@")[0] || "User",
+          is_active: true,
+          created_at: new Date().toISOString(),
+        };
+        setUser(initialUser);
+
+        // Fetch detail profil lengkap
         const { data } = await supabase
           .from("users")
           .select("*")
           .eq("id", authUser.id)
           .single();
-        if (data) {
+
+        if (data && isMounted) {
           setUser(data as User);
-        } else {
-          const pathRole = pathname.startsWith("/owner") ? "owner"
-            : pathname.startsWith("/doctor") ? "doctor"
-            : "patient";
-          setUser({
-            id: authUser.id,
-            email: authUser.email || "",
-            role: authUser.user_metadata?.role || pathRole,
-            full_name: authUser.user_metadata?.full_name || authUser.email?.split("@")[0] || "User",
-          } as User);
         }
       }
     }
     getUser();
-  }, [pathname]);
+    return () => { isMounted = false; };
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

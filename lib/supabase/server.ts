@@ -2,12 +2,12 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 export async function createClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   const cookieStore = await cookies();
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!rawUrl || !supabaseAnonKey) {
     return createServerClient(
       'https://placeholder.supabase.co',
       'placeholder-key',
@@ -19,6 +19,8 @@ export async function createClient() {
       }
     );
   }
+
+  const supabaseUrl = rawUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
 
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
@@ -42,15 +44,17 @@ export async function createClient() {
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 export async function createAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl || !serviceRoleKey) {
+  if (!rawUrl || !serviceRoleKey) {
     return createSupabaseClient(
       'https://placeholder.supabase.co',
       'placeholder-key'
     );
   }
+
+  const supabaseUrl = rawUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
 
   return createSupabaseClient(supabaseUrl, serviceRoleKey, {
     auth: {

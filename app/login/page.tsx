@@ -36,48 +36,52 @@ function LoginFormContent() {
     setError("");
 
     try {
-      const { error: authError } = await supabase.auth.signInWithPassword({
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: data.email.trim(),
         password: data.password,
       });
 
       if (authError) {
+        console.error("[Login authError]", authError);
         // Pesan generik agar peretas tidak dapat menebak keberadaan email/admin
         setError("Email atau kata sandi tidak valid. Silakan periksa kembali.");
         setLoading(false);
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = authData?.user;
       if (!user) {
         setError("Gagal memverifikasi identitas akun.");
         setLoading(false);
         return;
       }
 
-      // Cek peran pengguna di tabel users (hanya dokter dan pemilik yang memiliki akses staf)
-      const { data: profile, error: profileError } = await supabase
-        .from("users")
-        .select("role, is_active")
-        .eq("id", user.id)
-        .maybeSingle();
+      // Cek peran langsung dari metadata JWT sesi untuk respon instan
+      let role = user.user_metadata?.role;
 
-      if (profileError || !profile || !profile.is_active) {
-        await supabase.auth.signOut();
-        setError("Akun tidak memiliki izin akses portal.");
-        setLoading(false);
-        return;
+      if (!role) {
+        const { data: profile, error: profileError } = await supabase
+          .from("users")
+          .select("role, is_active")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (profileError || !profile || !profile.is_active) {
+          await supabase.auth.signOut();
+          setError("Akun tidak memiliki izin akses portal.");
+          setLoading(false);
+          return;
+        }
+        role = profile.role;
       }
 
-      if (profile.role === "doctor") {
+      if (role === "doctor") {
         router.push("/doctor/dashboard");
-      } else if (profile.role === "owner") {
+      } else if (role === "owner") {
         router.push("/owner/dashboard");
       } else {
         router.push("/patient/dashboard");
       }
-
-      router.refresh();
     } catch (err: any) {
       console.error("[Login Error]", err);
       setError("Terjadi kesalahan pada sistem. Silakan coba lagi.");
