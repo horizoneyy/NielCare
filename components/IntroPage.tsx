@@ -367,7 +367,7 @@ export default function IntroPage() {
         <div className="min-h-[calc(100vh-5rem)] flex items-center py-8 md:py-12 px-4 sm:px-8 max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full">
             {/* Left Text Content */}
-            <div className="lg:col-span-5 space-y-6 z-10 reveal-blur">
+            <div className="lg:col-span-5 space-y-6 z-10 animate-fade-in">
               <div className="space-y-1">
                 <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.05]">
                   Your Smile,
@@ -402,7 +402,7 @@ export default function IntroPage() {
             </div>
 
             {/* Right Visual: Clean Expansive Video Gigi Baru (Tanpa Lingkaran Aura) */}
-            <div className="lg:col-span-7 relative flex items-center justify-center lg:justify-end reveal-blur reveal-delay-2">
+            <div className="lg:col-span-7 relative flex items-center justify-center lg:justify-end animate-fade-in">
               <div className="w-full max-w-xl lg:max-w-2xl xl:max-w-3xl flex items-center justify-center">
                 <video
                   ref={videoRef}
@@ -411,6 +411,11 @@ export default function IntroPage() {
                   muted
                   playsInline
                   preload="auto"
+                  onLoadedMetadata={(e) => {
+                    const v = e.currentTarget;
+                    v.muted = true;
+                    v.play().catch(() => {});
+                  }}
                   className="w-full h-auto max-h-[580px] object-contain rounded-2xl drop-shadow-xl"
                 >
                   <source src="/videos/gemini_generated_video_1e5ea4ae.mp4" type="video/mp4" />

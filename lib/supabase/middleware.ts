@@ -40,9 +40,14 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Public routes — no auth required (including intro/landing page)
+  // Public routes — no auth required (including intro/landing page and static assets)
   const publicRoutes = ['/', '/login', '/register'];
-  if (publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))) {
+  if (
+    publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) ||
+    pathname.startsWith('/videos/') ||
+    pathname.endsWith('.mp4') ||
+    pathname.endsWith('.webm')
+  ) {
     if (user && (pathname === '/login' || pathname === '/register')) {
       // Already logged in — redirect to their dashboard
       const { data: profile } = await supabase
