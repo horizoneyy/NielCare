@@ -45,9 +45,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# AI Agent & Internal Project Documentation (Disimpan lokal saja)
+# AI Agent, Database & Internal Tests (Disimpan lokal saja)
 .agents/
 docs/
 niel-care-agent/
 AGENTS.md
+database/
+tests/
 
