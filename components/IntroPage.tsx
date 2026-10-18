@@ -138,7 +138,7 @@ export default function IntroPage() {
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
 
-  // Scroll reveal observer (Blur to clear animation on scroll up and down)
+  // Scroll reveal observer (Blur-to-clear ultra smooth ala diyondev.my.id)
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -146,13 +146,16 @@ export default function IntroPage() {
           if (entry.isIntersecting) {
             entry.target.classList.add("is-visible");
           } else {
-            entry.target.classList.remove("is-visible");
+            // Re-blur hanya jika keluar ke bawah (scrolling ke atas)
+            if (entry.boundingClientRect.top > 0) {
+              entry.target.classList.remove("is-visible");
+            }
           }
         });
       },
       {
-        threshold: 0.12,
-        rootMargin: "0px 0px -30px 0px",
+        threshold: 0.06,
+        rootMargin: "0px 0px -40px 0px",
       }
     );
 
@@ -275,7 +278,7 @@ export default function IntroPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900 scroll-smooth">
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-emerald-100 selection:text-emerald-900">
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {/* 1. FLOATING GLASSMORPHISM NAVBAR DENGAN INDIKATOR AKTIF              */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
@@ -422,7 +425,7 @@ export default function IntroPage() {
             </div>
 
             {/* Right Visual: Clean Expansive Video Gigi Baru (Tanpa Lingkaran Aura) */}
-            <div className="lg:col-span-7 relative flex items-center justify-center lg:justify-end reveal-blur">
+            <div className="lg:col-span-7 relative flex items-center justify-center lg:justify-end reveal-blur reveal-delay-2">
               <div className="w-full max-w-xl lg:max-w-2xl xl:max-w-3xl flex items-center justify-center">
                 <video
                   ref={videoRef}
@@ -453,8 +456,8 @@ export default function IntroPage() {
           </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            {/* Left Card: Mission Quote by Andi Daniel (Tanpa Badge Our Mission) */}
-            <div className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 flex flex-col justify-between shadow-xs reveal-blur">
+            {/* Left Card: Mission Quote by Andi Daniel */}
+            <div className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 flex flex-col justify-between shadow-xs reveal-blur reveal-delay-1">
               <div className="space-y-6">
                 <h3 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-slate-900 leading-snug tracking-tight">
                   Help you achieve the best dental care easily, quickly, and professionally for a lifetime of{" "}
@@ -467,8 +470,8 @@ export default function IntroPage() {
               </div>
             </div>
 
-            {/* Right Card: Penjelasan Sistem NielCare Dental (Menggantikan Kartu Foto) */}
-            <div className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-xs reveal-blur space-y-6">
+            {/* Right Card: Penjelasan Sistem NielCare Dental */}
+            <div className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-xs reveal-blur reveal-delay-2 space-y-6">
               <div className="space-y-5">
                 <h4 className="text-lg font-bold text-slate-900 tracking-tight">
                   Sistem Manajemen Klinik Modern NielCare
@@ -529,43 +532,49 @@ export default function IntroPage() {
             Our Service
           </h2>
 
-          {/* Grid Kartu Layanan Resmi NielCare (View Only - Tanpa Dokter Gigi Umum & Tanpa Badge) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 reveal-blur">
+          {/* Grid Kartu Layanan Resmi NielCare (View Only - Staggered Blur Reveal per Card) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               {
                 id: "Orthodontist",
                 title: "Ortodontis",
                 desc: "Pemasangan kawat gigi (behel) konvensional dan aligner gigi transparan.",
+                delay: "reveal-delay-1",
               },
               {
                 id: "Periodontist",
                 title: "Periodonsia",
                 desc: "Perawatan kesehatan gusi, radang gingivitis, dan scaling pembersihan karang mendalam.",
+                delay: "reveal-delay-2",
               },
               {
                 id: "Endodontist",
                 title: "Endodontis",
                 desc: "Perawatan saluran akar saraf gigi, pulpa gigi berlubang dalam, dan konservasi gigi.",
+                delay: "reveal-delay-3",
               },
               {
                 id: "Prosthodontist",
                 title: "Prostodontis",
                 desc: "Pembuatan gigi tiruan lepasan/permanen, mahkota jembatan (crown & bridge), dan restorasi.",
+                delay: "reveal-delay-4",
               },
               {
                 id: "Oral Surgeon",
                 title: "Bedah Mulut",
                 desc: "Operasi cabut gigi bungsu (odontektomi), implan gigi titanium permanen, dan bedah mulut minor.",
+                delay: "reveal-delay-5",
               },
               {
                 id: "Pediatric Dentist",
                 title: "Dokter Gigi Anak",
                 desc: "Perawatan kesehatan gigi khusus bayi dan anak-anak dengan pendekatan ramah tanpa trauma.",
+                delay: "reveal-delay-6",
               },
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="bg-white border border-emerald-200/80 rounded-3xl p-6 sm:p-7 text-left shadow-2xs hover:shadow-xs transition-shadow"
+                className={`bg-white border border-emerald-200/80 rounded-3xl p-6 sm:p-7 text-left shadow-2xs hover:shadow-xs transition-shadow reveal-blur ${item.delay}`}
               >
                 <h4 className="font-bold text-lg text-slate-800">
                   {item.title}
@@ -779,7 +788,7 @@ export default function IntroPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
             {/* Brand & Description */}
-            <div className="md:col-span-5 space-y-4">
+            <div className="md:col-span-5 space-y-4 reveal-blur">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold shadow-xs">
                   <ToothIcon className="w-4 h-4 text-white" />
@@ -794,7 +803,7 @@ export default function IntroPage() {
             </div>
 
             {/* Contact Details */}
-            <div className="md:col-span-3 space-y-3">
+            <div className="md:col-span-3 space-y-3 reveal-blur reveal-delay-2">
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 block">
                 Hubungi Kami
               </span>
@@ -826,7 +835,7 @@ export default function IntroPage() {
             </div>
 
             {/* Clinic Hours (Tanpa Card, Format Bersih Sama dengan Hubungi Kami) */}
-            <div className="md:col-span-4 space-y-3">
+            <div className="md:col-span-4 space-y-3 reveal-blur reveal-delay-3">
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 block">
                 Clinic Hours
               </span>
