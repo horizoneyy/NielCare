@@ -438,7 +438,7 @@ export default function IntroPage() {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <section
         id="home"
-        className="relative w-full bg-gradient-to-b from-white via-emerald-50/35 to-white border-b border-emerald-100/60 overflow-hidden"
+        className="relative w-full bg-white border-b border-slate-200/80 overflow-hidden"
       >
         <div className="min-h-[calc(100vh-5rem)] flex items-center py-8 md:py-12 px-4 sm:px-8 max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full">
@@ -496,21 +496,21 @@ export default function IntroPage() {
               </div>
             </div>
 
-            {/* Right Visual: Seamless 3D Floating Tooth (Menyatu murni dengan background halaman tanpa card/oval) */}
+            {/* Right Visual: Seamless 3D Floating Tooth (Menyatu murni dengan detail kontur gigi yang tajam & jelas) */}
             <div className="lg:col-span-7 relative flex items-center justify-center lg:justify-end animate-fade-in select-none">
-              {/* Soft ambient white spotlight di belakang gigi */}
+              {/* Soft ambient contrast glow di belakang gigi agar siluet putih terlihat jelas */}
               <div
                 aria-hidden="true"
-                className="absolute inset-0 max-w-2xl mx-auto rounded-full bg-radial from-white via-white/80 to-transparent blur-3xl pointer-events-none scale-125"
+                className="absolute inset-0 max-w-xl mx-auto rounded-full bg-radial from-emerald-100/35 via-teal-50/15 to-transparent blur-3xl pointer-events-none scale-110"
               />
 
               <div
                 className="w-full max-w-xl lg:max-w-2xl xl:max-w-3xl flex items-center justify-center relative"
                 style={{
                   maskImage:
-                    "radial-gradient(ellipse 85% 85% at 50% 50%, #000 65%, rgba(0,0,0,0.85) 80%, transparent 98%)",
+                    "radial-gradient(ellipse 75% 75% at 50% 50%, #000 45%, rgba(0,0,0,0.85) 60%, transparent 84%)",
                   WebkitMaskImage:
-                    "radial-gradient(ellipse 85% 85% at 50% 50%, #000 65%, rgba(0,0,0,0.85) 80%, transparent 98%)",
+                    "radial-gradient(ellipse 75% 75% at 50% 50%, #000 45%, rgba(0,0,0,0.85) 60%, transparent 84%)",
                 }}
               >
                 <video
@@ -528,7 +528,7 @@ export default function IntroPage() {
                   className="w-full h-auto max-h-[580px] object-contain transition-all duration-500"
                   style={{
                     mixBlendMode: "multiply",
-                    filter: "brightness(1.18) contrast(1.04)",
+                    filter: "contrast(1.16) brightness(1.08) drop-shadow(0 20px 30px rgba(0, 0, 0, 0.08))",
                   }}
                 >
                   <source src="/videos/gemini_generated_video_1e5ea4ae.mp4" type="video/mp4" />
