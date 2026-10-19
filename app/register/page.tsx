@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2, AlertCircle, ArrowRight, Smile, ArrowLeft, UserCheck, UserPlus, Phone } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -32,7 +31,7 @@ export default function RegisterPage() {
     setSuccessNotice("");
 
     if (!fullName.trim() || !dateOfBirth || !gender || !newPhone.trim()) {
-      setErrorMsg("Nama, tanggal lahir, jenis kelamin, dan nomor HP wajib diisi lengkap.");
+      setErrorMsg("Full name, date of birth, gender, and phone number are all required.");
       return;
     }
 
@@ -54,24 +53,21 @@ export default function RegisterPage() {
 
       if (!res.ok) {
         if (data.error === "already_registered") {
-          // Kalau pasien baru memasukkan nomor yang sudah terdaftar,
-          // sistem menolak dan mengarahkannya ke “Pasien Lama”.
-          setErrorMsg("Nomor HP sudah terdaftar. Mengalihkan Anda ke Pasien Lama...");
+          setErrorMsg("Phone number already registered. Redirecting to Returning Patient...");
           setExistingPhone(newPhone.trim());
           setTimeout(() => {
             setActiveTab("existing");
-            setErrorMsg("Nomor HP Anda sudah terdaftar di sistem. Cukup klik 'Masuk ke Dashboard'.");
+            setErrorMsg("Your phone number is already registered in the system. Simply click 'Access Dashboard'.");
           }, 1200);
           setLoading(false);
           return;
         }
 
-        setErrorMsg(data.message || data.error || "Gagal mendaftarkan pasien.");
+        setErrorMsg(data.message || data.error || "Failed to register patient.");
         setLoading(false);
         return;
       }
 
-      // Berhasil daftar -> otomatis login dengan kredensial internal nomor HP
       if (data.email && data.password) {
         await supabase.auth.signInWithPassword({
           email: data.email,
@@ -82,7 +78,7 @@ export default function RegisterPage() {
       router.push("/patient/dashboard");
       router.refresh();
     } catch {
-      setErrorMsg("Gagal menghubungi server klinik. Periksa koneksi internet Anda.");
+      setErrorMsg("Failed to connect to the clinic server. Please check your internet connection.");
       setLoading(false);
     }
   };
@@ -94,7 +90,7 @@ export default function RegisterPage() {
     setSuccessNotice("");
 
     if (!existingPhone.trim()) {
-      setErrorMsg("Harap masukkan nomor HP Anda.");
+      setErrorMsg("Please enter your phone number.");
       return;
     }
 
@@ -113,16 +109,15 @@ export default function RegisterPage() {
 
       if (!res.ok) {
         if (data.error === "not_found") {
-          setErrorMsg("Nomor HP belum terdaftar di klinik. Silakan pilih tab 'Pasien Baru' untuk mendaftar.");
+          setErrorMsg("Phone number is not registered yet. Please select the 'New Patient' tab to register.");
         } else {
-          setErrorMsg(data.message || data.error || "Gagal memverifikasi nomor HP.");
+          setErrorMsg(data.message || data.error || "Failed to verify phone number.");
         }
         setLoading(false);
         return;
       }
 
-      // Berhasil menemukan data lama -> otomatis login tanpa daftar nama dan tanpa login kata sandi
-      setSuccessNotice(`Selamat datang kembali, ${data.patient?.full_name}! Memuat dashboard Anda...`);
+      setSuccessNotice(`Welcome back, ${data.patient?.full_name}! Loading your dashboard...`);
 
       if (data.email && data.password) {
         await supabase.auth.signInWithPassword({
@@ -134,7 +129,7 @@ export default function RegisterPage() {
       router.push("/patient/dashboard");
       router.refresh();
     } catch {
-      setErrorMsg("Gagal menghubungi server klinik. Periksa koneksi internet Anda.");
+      setErrorMsg("Failed to connect to the clinic server. Please check your internet connection.");
       setLoading(false);
     }
   };
@@ -144,30 +139,27 @@ export default function RegisterPage() {
       <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-8 relative">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-slate-600 mb-6 transition-colors"
+          className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-700 mb-6 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda
+          ← Back to Home
         </Link>
 
         {/* Brand Header */}
         <div className="mb-6">
-          <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-9 h-9 rounded-xl bg-emerald-700 flex items-center justify-center text-white font-bold shadow-sm">
-              <Smile className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="font-bold text-slate-900 text-lg">NielCare</span>
-              <span className="font-light text-emerald-700 text-lg ml-1">Dental</span>
-            </div>
+          <div className="mb-3">
+            <span className="text-3xl font-extrabold tracking-tight font-sans">
+              <span className="text-slate-900">Niel</span>
+              <span className="text-emerald-600">Care</span>
+            </span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Pendaftaran & Masuk Pasien</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Patient Registration &amp; Sign In</h1>
           <p className="text-xs text-slate-500 mt-1">
-            Nomor HP Anda menjadi pengenal unik pasien di klinik NielCare Dental.
+            Your phone number serves as your unique patient ID at NielCare Dental.
           </p>
         </div>
 
         {/* Tab Selector: Pasien Baru vs Pasien Lama */}
-        <div className="grid grid-cols-2 p-1.5 bg-slate-100 rounded-2xl mb-6">
+        <div className="grid grid-cols-2 p-1.5 bg-slate-100 rounded-xl mb-6">
           <button
             type="button"
             onClick={() => {
@@ -175,14 +167,13 @@ export default function RegisterPage() {
               setErrorMsg("");
               setSuccessNotice("");
             }}
-            className={`py-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+            className={`py-2.5 text-xs sm:text-sm font-bold rounded-lg transition-all text-center cursor-pointer ${
               activeTab === "new"
-                ? "bg-white text-emerald-800 shadow-sm"
+                ? "bg-white text-emerald-800 shadow-xs"
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            <UserPlus className="w-4 h-4" />
-            <span>Pasien Baru</span>
+            New Patient
           </button>
 
           <button
@@ -192,47 +183,44 @@ export default function RegisterPage() {
               setErrorMsg("");
               setSuccessNotice("");
             }}
-            className={`py-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+            className={`py-2.5 text-xs sm:text-sm font-bold rounded-lg transition-all text-center cursor-pointer ${
               activeTab === "existing"
-                ? "bg-white text-emerald-800 shadow-sm"
+                ? "bg-white text-emerald-800 shadow-xs"
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            <UserCheck className="w-4 h-4" />
-            <span>Pasien Lama</span>
+            Returning Patient
           </button>
         </div>
 
         {/* Alerts */}
         {errorMsg && (
-          <div className="flex items-center gap-2 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-2xl p-3.5 mb-5">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>{errorMsg}</span>
+          <div className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-3.5 mb-5 font-medium">
+            {errorMsg}
           </div>
         )}
 
         {successNotice && (
-          <div className="flex items-center gap-2 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 mb-5">
-            <UserCheck className="h-4 w-4 shrink-0 text-emerald-600" />
-            <span>{successNotice}</span>
+          <div className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 mb-5 font-medium">
+            {successNotice}
           </div>
         )}
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* TAB 1: FORM PASIEN BARU (HANYA NAMA, TGL LAHIR, GENDER, NO HP)      */}
+        {/* TAB 1: FORM PASIEN BARU */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {activeTab === "new" && (
           <form onSubmit={handleSubmitNewPatient} className="space-y-4" autoComplete="off">
             <div>
               <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
-                Nama Lengkap *
+                Full Name *
               </label>
               <input
                 type="text"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="Contoh: Andi Daniel"
+                placeholder="e.g., Jane Doe"
                 className="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all text-slate-800"
               />
             </div>
@@ -240,7 +228,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
-                  Tanggal Lahir *
+                  Date of Birth *
                 </label>
                 <input
                   type="date"
@@ -253,36 +241,33 @@ export default function RegisterPage() {
 
               <div>
                 <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
-                  Jenis Kelamin *
+                  Gender *
                 </label>
                 <select
                   value={gender}
                   onChange={(e) => setGender(e.target.value as "male" | "female")}
                   className="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all text-slate-800 h-[42px]"
                 >
-                  <option value="male">Laki-laki</option>
-                  <option value="female">Perempuan</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
                 </select>
               </div>
             </div>
 
             <div>
               <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
-                Nomor HP (WhatsApp) *
+                Phone Number (WhatsApp) *
               </label>
-              <div className="relative">
-                <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="tel"
-                  required
-                  value={newPhone}
-                  onChange={(e) => setNewPhone(e.target.value)}
-                  placeholder="08123456789"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all text-slate-800"
-                />
-              </div>
+              <input
+                type="tel"
+                required
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+                placeholder="08123456789"
+                className="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all text-slate-800"
+              />
               <p className="text-[10px] text-slate-400 mt-1">
-                Nomor ini langsung terdaftar sebagai identitas unik Anda di klinik.
+                This number will be registered as your unique patient ID at the clinic.
               </p>
             </div>
 
@@ -290,44 +275,33 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs sm:text-sm font-bold rounded-2xl transition-all shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Mendaftarkan Pasien...
-                  </>
-                ) : (
-                  <>
-                    Daftar & Masuk ke Dashboard <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
+                {loading ? "Registering Patient..." : "Register & Access Dashboard"}
               </button>
             </div>
           </form>
         )}
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* TAB 2: FORM PASIEN LAMA (HANYA MEMASUKKAN NOMOR HP)                  */}
+        {/* TAB 2: FORM PASIEN LAMA */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {activeTab === "existing" && (
           <form onSubmit={handleSubmitExistingPatient} className="space-y-4" autoComplete="off">
             <div>
               <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
-                Masukkan Nomor HP Terdaftar *
+                Enter Registered Phone Number *
               </label>
-              <div className="relative">
-                <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="tel"
-                  required
-                  value={existingPhone}
-                  onChange={(e) => setExistingPhone(e.target.value)}
-                  placeholder="Contoh: 08123456789"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all text-slate-800"
-                />
-              </div>
+              <input
+                type="tel"
+                required
+                value={existingPhone}
+                onChange={(e) => setExistingPhone(e.target.value)}
+                placeholder="e.g., 08123456789"
+                className="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all text-slate-800"
+              />
               <p className="text-[11px] text-slate-500 mt-2 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
-                Sistem mencari nomor Anda di database dan data lama Anda akan terisi otomatis, tanpa perlu daftar nama dan tanpa login kata sandi.
+                The system will match your number with your existing records automatically without requiring a password.
               </p>
             </div>
 
@@ -335,17 +309,9 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs sm:text-sm font-bold rounded-2xl transition-all shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Mencari Data Pasien...
-                  </>
-                ) : (
-                  <>
-                    Masuk ke Dashboard <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
+                {loading ? "Looking Up Patient Data..." : "Access Dashboard"}
               </button>
             </div>
           </form>
@@ -353,9 +319,9 @@ export default function RegisterPage() {
 
         <div className="mt-6 pt-5 border-t border-slate-100 text-center">
           <p className="text-xs text-slate-500">
-            Akses staf & dokter?{" "}
+            Staff &amp; doctor access?{" "}
             <Link href="/login" className="font-semibold text-emerald-700 hover:text-emerald-800 underline">
-              Login Staf di Sini
+              Staff Sign In Here
             </Link>
           </p>
         </div>

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { Sidebar } from "@/components/shared/Sidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,8 +13,6 @@ import { EmergencyBanner } from "@/components/shared/EmergencyBanner";
 import { formatDate, formatTime, formatCurrency, formatNumber } from "@/lib/utils/formatters";
 import { EMERGENCY_LEVEL_LABELS } from "@/types";
 import type { Appointment, MedicalRecord } from "@/types";
-import { Loader2, ArrowLeft, Check, X, FileText, Brain, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
-import Link from "next/link";
 
 // Parse min/max from estimatedCostLabel like "Rp 300.000 – Rp 600.000"
 function parseEstimatedRange(label: string | undefined): { min: number; max: number } | null {
@@ -31,36 +29,30 @@ function CostWarning({ cost, aiLabel }: { cost: number; aiLabel?: string }) {
   if (cost > range.max) {
     const excess = formatCurrency(cost - range.max);
     return (
-      <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl mt-2">
-        <TrendingUp className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
-        <div>
-          <p className="text-xs font-semibold text-amber-700">Biaya Melebihi Estimasi AI</p>
-          <p className="text-xs text-amber-600 mt-0.5">
-            Biaya yang dimasukkan <strong>{formatCurrency(cost)}</strong> melebihi batas atas estimasi AI (<strong>{aiLabel}</strong>) sebesar <strong>{excess}</strong>.
-            Pastikan ada alasan klinis yang mendukung.
-          </p>
-        </div>
+      <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg mt-2 text-amber-900 text-xs">
+        <p className="font-bold">Cost Exceeds AI Estimate</p>
+        <p className="mt-0.5 leading-relaxed">
+          The entered cost <strong>{formatCurrency(cost)}</strong> exceeds the AI upper estimate (
+          <strong>{aiLabel}</strong>) by <strong>{excess}</strong>.
+        </p>
       </div>
     );
   }
   if (cost < range.min) {
     const diff = formatCurrency(range.min - cost);
     return (
-      <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-xl mt-2">
-        <TrendingDown className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
-        <div>
-          <p className="text-xs font-semibold text-blue-700">Biaya Di Bawah Estimasi AI</p>
-          <p className="text-xs text-blue-600 mt-0.5">
-            Biaya yang dimasukkan <strong>{formatCurrency(cost)}</strong> berada di bawah batas bawah estimasi AI (<strong>{aiLabel}</strong>) sebesar <strong>{diff}</strong>.
-          </p>
-        </div>
+      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mt-2 text-blue-900 text-xs">
+        <p className="font-bold">Cost Below AI Estimate</p>
+        <p className="mt-0.5 leading-relaxed">
+          The entered cost <strong>{formatCurrency(cost)}</strong> is below the AI lower estimate (
+          <strong>{aiLabel}</strong>) by <strong>{diff}</strong>.
+        </p>
       </div>
     );
   }
   return (
-    <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-xl mt-2">
-      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
-      <p className="text-xs font-semibold text-green-700">Biaya sesuai dengan estimasi AI ✓</p>
+    <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg mt-2 text-xs">
+      <p className="font-semibold text-emerald-700">Cost is within the clinical AI estimated range ✓</p>
     </div>
   );
 }
@@ -68,7 +60,7 @@ function CostWarning({ cost, aiLabel }: { cost: number; aiLabel?: string }) {
 export default function DoctorAppointmentDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const [appointment, setAppointment] = useState<Appointment & { medical_record?: MedicalRecord } | null>(null);
+  const [appointment, setAppointment] = useState<(Appointment & { medical_record?: MedicalRecord }) | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [record, setRecord] = useState({
@@ -80,39 +72,61 @@ export default function DoctorAppointmentDetailPage() {
 
   useEffect(() => {
     async function fetchDetail() {
-      const res = await fetch(`/api/appointments/${id}`);
-      if (res.ok) {
-        const data = await res.json();
-        setAppointment(data);
-        if (data.medical_record) {
-          setRecord({
-            diagnosis_notes: data.medical_record.diagnosis_notes || "",
-            treatment_given: data.medical_record.treatment_given || "",
-            medications_prescribed: data.medical_record.medications_prescribed || "",
-            treatment_cost: data.medical_record.treatment_cost != null ? formatNumber(data.medical_record.treatment_cost) : "",
-          });
-        } else {
-          // Pre-fill treatment_cost from AI estimate
-          try {
-            const ai = data.ai_analysis_result
-              ? (typeof data.ai_analysis_result === "string" ? JSON.parse(data.ai_analysis_result) : data.ai_analysis_result)
-              : null;
-            if (ai?.estimatedCost) {
-              setRecord(prev => ({ ...prev, treatment_cost: formatNumber(ai.estimatedCost) }));
+      try {
+        const res = await fetch(`/api/appointments/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setAppointment(data);
+          if (data.medical_record) {
+            setRecord({
+              diagnosis_notes: data.medical_record.diagnosis_notes || "",
+              treatment_given: data.medical_record.treatment_given || "",
+              medications_prescribed: data.medical_record.medications_prescribed || "",
+              treatment_cost:
+                data.medical_record.treatment_cost != null
+                  ? formatNumber(data.medical_record.treatment_cost)
+                  : "",
+            });
+          } else {
+            try {
+              const ai = data.ai_analysis_result
+                ? typeof data.ai_analysis_result === "string"
+                  ? JSON.parse(data.ai_analysis_result)
+                  : data.ai_analysis_result
+                : null;
+              if (ai?.estimatedCost) {
+                setRecord((prev) => ({ ...prev, treatment_cost: formatNumber(ai.estimatedCost) }));
+              }
+            } catch {
+              /* ignore */
             }
-          } catch { /* ignore */ }
+          }
         }
+      } catch (err) {
+        console.error("Gagal mengambil detail janji temu:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchDetail();
   }, [id]);
 
   const updateStatus = async (status: string) => {
     setSaving(true);
-    await fetch(`/api/appointments/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
-    setAppointment(prev => prev ? { ...prev, status: status as Appointment["status"] } : null);
-    setSaving(false);
+    try {
+      const res = await fetch(`/api/appointments/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (res.ok) {
+        setAppointment((prev) => (prev ? { ...prev, status: status as Appointment["status"] } : null));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const saveRecord = async () => {
@@ -126,263 +140,414 @@ export default function DoctorAppointmentDetailPage() {
           diagnosis_notes: record.diagnosis_notes,
           treatment_given: record.treatment_given,
           medications_prescribed: record.medications_prescribed || null,
-          treatment_cost: record.treatment_cost ? parseInt(record.treatment_cost.replace(/\D/g, "")) : 0,
+          treatment_cost: record.treatment_cost ? parseInt(record.treatment_cost.replace(/\D/g, ""), 10) : 0,
         }),
       });
       if (!res.ok) {
         const errorData = await res.json();
-        alert(`Gagal menyimpan: ${errorData.error || "Terjadi kesalahan"}`);
+        alert(`Failed to save: ${errorData.error || "An error occurred"}`);
         setSaving(false);
         return;
       }
-      setAppointment(prev => prev ? { ...prev, status: "done" } : null);
+      setAppointment((prev) => (prev ? { ...prev, status: "done" } : null));
       router.refresh();
     } catch (e) {
-      alert("Gagal menghubungi server. Periksa koneksi internet Anda.");
+      alert("Failed to connect to the server. Please check your internet connection.");
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return (
-    <div className="min-h-screen" style={{ background: "#f0f1f5" }}>
-      <Sidebar />
-      <div className="flex items-center justify-center h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Sidebar />
+        <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
+          <div className="h-8 bg-slate-200 rounded w-72 mb-6"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 h-72 bg-white rounded-xl border border-slate-200"></div>
+            <div className="h-72 bg-white rounded-xl border border-slate-200"></div>
+          </div>
+        </main>
       </div>
-    </div>
-  );
-  if (!appointment) return (
-    <div className="min-h-screen" style={{ background: "#f0f1f5" }}>
-      <Sidebar />
-      <div className="flex items-center justify-center h-[60vh]">
-        <p className="text-slate-500">Data janji tidak ditemukan.</p>
-      </div>
-    </div>
-  );
+    );
+  }
 
-  // Parse AI analysis
+  if (!appointment) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Sidebar />
+        <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
+          <h2 className="text-lg font-bold text-slate-800">Appointment Not Found</h2>
+          <p className="text-xs text-slate-500 mt-1 max-w-sm">
+            The appointment may have been rescheduled or the data could not be loaded.
+          </p>
+          <Link href="/doctor/appointments" className="mt-4">
+            <Button size="sm" variant="outline" className="rounded-lg text-xs font-semibold">
+              Back to Appointments List
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   let aiAnalysis: any = null;
   try {
     if (appointment.ai_analysis_result) {
-      aiAnalysis = typeof appointment.ai_analysis_result === "string"
-        ? JSON.parse(appointment.ai_analysis_result)
-        : appointment.ai_analysis_result;
+      aiAnalysis =
+        typeof appointment.ai_analysis_result === "string"
+          ? JSON.parse(appointment.ai_analysis_result)
+          : appointment.ai_analysis_result;
     }
-  } catch { aiAnalysis = null; }
+  } catch {
+    aiAnalysis = null;
+  }
 
   const level = appointment.emergency_level || "routine";
-  const priorityLabel = EMERGENCY_LEVEL_LABELS[level];
-  const appointmentTitle = aiAnalysis?.possibleCondition || appointment.symptom_description?.slice(0, 50) || "Janji Pemeriksaan Gigi";
-  const costValue = parseInt((record.treatment_cost || "").replace(/\D/g, "")) || 0;
+  const priorityLabel = EMERGENCY_LEVEL_LABELS[level] || "Routine";
+  const appointmentTitle =
+    aiAnalysis?.possibleCondition || appointment.symptom_description?.slice(0, 50) || "Dental Examination";
+  const costValue = parseInt((record.treatment_cost || "").replace(/\D/g, ""), 10) || 0;
 
   return (
-    <div className="min-h-screen" style={{ background: "#f0f1f5" }}>
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased">
       <Sidebar />
-      <main className="mx-auto max-w-3xl px-4 py-8 animate-fade-in">
 
-        {appointment.emergency_level === "critical" && <EmergencyBanner />}
-
-        {/* Appointment Info Card */}
-        <Card className="border-0 shadow-sm mb-6">
-          <CardHeader>
-            <div className="flex items-start justify-between gap-3">
-              <CardTitle className="flex items-center gap-2 text-base leading-snug">
-                <Brain className="h-5 w-5 text-emerald-600 flex-shrink-0" />
-                {appointmentTitle}
-              </CardTitle>
-              <div className="flex gap-2 flex-shrink-0">
-                <StatusBadge status={appointment.status} />
-                <EmergencyBadge level={appointment.emergency_level} />
-              </div>
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+        {/* Top Header (Clean title, no top badge, no subtitle, no icons) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <StatusBadge status={appointment.status} />
+              <EmergencyBadge level={appointment.emergency_level} />
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs text-slate-400">Pasien</p>
-                <p className="font-medium">{appointment.patient?.full_name}</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+              {appointmentTitle}
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            {appointment.status === "pending" && (
+              <>
+                <Button
+                  onClick={() => updateStatus("approved")}
+                  disabled={saving}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs h-10 px-4"
+                >
+                  Approve Appointment
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => updateStatus("rejected")}
+                  disabled={saving}
+                  className="border-red-200 text-red-600 hover:bg-red-50 font-medium rounded-lg text-xs h-10 px-4"
+                >
+                  Decline
+                </Button>
+              </>
+            )}
+
+            <Link href="/doctor/appointments">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-medium rounded-lg text-xs h-10 px-4"
+              >
+                Back
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {appointment.emergency_level === "critical" && (
+          <div className="mb-6">
+            <EmergencyBanner />
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Main Column */}
+          <div className="md:col-span-2 space-y-6">
+            {/* Patient & Consultation Summary Card */}
+            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">
+                Schedule &amp; Patient Information
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 p-4 rounded-lg bg-slate-50 border border-slate-100 mb-4">
+                <div>
+                  <span className="text-xs text-slate-500">Patient Name</span>
+                  <p className="text-sm font-bold text-slate-900 mt-0.5">
+                    {appointment.patient?.full_name || "-"}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-xs text-slate-500">Visit Date</span>
+                  <p className="text-sm font-bold text-slate-900 mt-0.5">
+                    {formatDate(appointment.appointment_date)}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-xs text-slate-500">Practice Time</span>
+                  <p className="text-sm font-bold text-blue-700 mt-0.5">
+                    {formatTime(appointment.slot_time)} WIB
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-slate-400">Tanggal</p>
-                <p className="font-medium">{formatDate(appointment.appointment_date)}</p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-400">Waktu</p>
-                <p className="font-medium">{formatTime(appointment.slot_time)}</p>
-              </div>
-              {aiAnalysis?.estimatedCostLabel && (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded">Rp</span>
+
+              {appointment.symptom_description && (
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    Patient Self-Reported Symptoms
+                  </span>
+                  <p className="text-xs sm:text-sm text-slate-700 bg-slate-50 p-3.5 rounded-lg border border-slate-100 mt-1 leading-relaxed">
+                    &ldquo;{appointment.symptom_description}&rdquo;
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* AI Clinical Triage Insight */}
+            {aiAnalysis && (
+              <div className="bg-blue-50/50 rounded-xl p-6 border border-blue-200 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-blue-100 mb-4">
                   <div>
-                    <p className="text-xs text-slate-400">Estimasi AI</p>
-                    <p className="font-medium text-green-600">{aiAnalysis.estimatedCostLabel}</p>
+                    <h3 className="text-sm font-bold text-slate-900">Clinical AI Triage Result</h3>
+                  </div>
+                  <span className="px-2.5 py-1 rounded text-xs font-bold bg-blue-100 text-blue-800">
+                    Category: {priorityLabel}
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {aiAnalysis.reason && (
+                    <div>
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Initial Indication
+                      </span>
+                      <p className="text-xs sm:text-sm text-slate-700 mt-1 bg-white p-3 rounded-lg border border-blue-100 leading-relaxed">
+                        {aiAnalysis.reason}
+                      </p>
+                    </div>
+                  )}
+
+                  {aiAnalysis.recommendation && (
+                    <div className="p-3 bg-white border border-blue-100 rounded-lg text-xs text-slate-700">
+                      <strong className="text-blue-900 block mb-0.5">Recommended Care:</strong>
+                      {aiAnalysis.recommendation}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Treatment Form */}
+            {appointment.status === "approved" && !appointment.medical_record && (
+              <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
+                <div className="pb-4 border-b border-slate-100 mb-5">
+                  <h3 className="text-base font-bold text-slate-900">Electronic Medical Record (EMR)</h3>
+                </div>
+
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold text-slate-700">
+                      Diagnosis Notes <span className="text-red-500">*</span>
+                    </Label>
+                    <Textarea
+                      value={record.diagnosis_notes}
+                      onChange={(e) => setRecord((p) => ({ ...p, diagnosis_notes: e.target.value }))}
+                      placeholder="e.g., Irreversible pulpitis tooth 36..."
+                      className="rounded-lg border-slate-200 text-sm focus:border-blue-500"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-xs font-bold text-slate-700">
+                      Clinical Treatment Performed <span className="text-red-500">*</span>
+                    </Label>
+                    <Textarea
+                      value={record.treatment_given}
+                      onChange={(e) => setRecord((p) => ({ ...p, treatment_given: e.target.value }))}
+                      placeholder="e.g., Cavity preparation, temporary restoration..."
+                      className="rounded-lg border-slate-200 text-sm focus:border-blue-500"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold text-slate-700">
+                        Prescription Medications (Optional)
+                      </Label>
+                      <Input
+                        value={record.medications_prescribed}
+                        onChange={(e) =>
+                          setRecord((p) => ({ ...p, medications_prescribed: e.target.value }))
+                        }
+                        placeholder="e.g., Amoxicillin 500mg, Mefenamic Acid..."
+                        className="rounded-lg border-slate-200 text-sm focus:border-blue-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold text-slate-700">
+                        Treatment Cost (IDR)
+                      </Label>
+                      <Input
+                        type="text"
+                        value={record.treatment_cost}
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, "");
+                          if (!digits) {
+                            setRecord((p) => ({ ...p, treatment_cost: "" }));
+                            return;
+                          }
+                          const num = parseInt(digits, 10);
+                          setRecord((p) => ({ ...p, treatment_cost: formatNumber(num) }));
+                        }}
+                        placeholder={
+                          aiAnalysis?.estimatedCost ? formatNumber(aiAnalysis.estimatedCost) : "0"
+                        }
+                        className="rounded-lg border-slate-200 text-sm focus:border-blue-500 font-mono"
+                      />
+                      {costValue > 0 && aiAnalysis?.estimatedCostLabel && (
+                        <CostWarning cost={costValue} aiLabel={aiAnalysis.estimatedCostLabel} />
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <Button
+                      onClick={saveRecord}
+                      disabled={saving || !record.diagnosis_notes || !record.treatment_given}
+                      className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs h-10 px-6"
+                    >
+                      {saving ? "Saving Medical Record..." : "Complete Visit & Save EMR"}
+                    </Button>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Existing Medical Record */}
+            {appointment.medical_record && (
+              <div className="bg-white rounded-xl p-6 border border-emerald-200 shadow-xs">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+                  <h3 className="text-base font-bold text-slate-900">
+                    Verified Patient Medical Record
+                  </h3>
+                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+                    Treatment Completed
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">
+                      Doctor&apos;s Diagnosis
+                    </span>
+                    <p className="text-sm text-slate-800 mt-1 font-medium bg-slate-50 p-3.5 rounded-lg border border-slate-100 leading-relaxed">
+                      {appointment.medical_record.diagnosis_notes}
+                    </p>
+                  </div>
+
+                  <div>
+                    <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">
+                      Medical Treatment
+                    </span>
+                    <p className="text-sm text-slate-800 mt-1 font-medium bg-slate-50 p-3.5 rounded-lg border border-slate-100 leading-relaxed">
+                      {appointment.medical_record.treatment_given}
+                    </p>
+                  </div>
+
+                  {appointment.medical_record.medications_prescribed && (
+                    <div>
+                      <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">
+                        Prescriptions
+                      </span>
+                      <p className="text-sm text-slate-800 mt-1 font-medium bg-blue-50/40 p-3.5 rounded-lg border border-blue-100 leading-relaxed">
+                        {appointment.medical_record.medications_prescribed}
+                      </p>
+                    </div>
+                  )}
+
+                  {appointment.medical_record.treatment_cost != null && (
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-600">Total Treatment Cost:</span>
+                      <span className="text-lg font-extrabold text-slate-900 font-mono">
+                        {formatCurrency(appointment.medical_record.treatment_cost)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                Patient Status
+              </h4>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1.5 border-b border-slate-100">
+                  <span className="text-slate-500">Appointment Status:</span>
+                  <StatusBadge status={appointment.status} />
+                </div>
+                <div className="flex justify-between py-1.5 border-b border-slate-100">
+                  <span className="text-slate-500">Urgency Level:</span>
+                  <EmergencyBadge level={appointment.emergency_level} />
+                </div>
+                <div className="flex justify-between py-1.5">
+                  <span className="text-slate-500">Email:</span>
+                  <span className="text-slate-800 font-medium truncate max-w-[150px]">
+                    {appointment.patient?.email || "-"}
+                  </span>
+                </div>
+              </div>
+
+              {appointment.status === "pending" && (
+                <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col gap-2">
+                  <Button
+                    onClick={() => updateStatus("approved")}
+                    disabled={saving}
+                    size="sm"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold"
+                  >
+                    Approve Appointment
+                  </Button>
+                  <Button
+                    onClick={() => updateStatus("rejected")}
+                    disabled={saving}
+                    size="sm"
+                    variant="outline"
+                    className="w-full border-red-200 text-red-600 hover:bg-red-50 rounded-lg text-xs font-semibold"
+                  >
+                    Decline Request
+                  </Button>
+                </div>
               )}
             </div>
 
-            {appointment.symptom_description && (
-              <div>
-                <p className="text-xs text-slate-400">Keluhan Pasien</p>
-                <p className="text-sm mt-1 p-3 bg-slate-50 rounded-lg">{appointment.symptom_description}</p>
+            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
+              <h4 className="text-xs font-bold text-slate-900 mb-3">AI Cost Estimate</h4>
+              <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-100">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  AI Triage Estimate
+                </span>
+                <p className="text-base sm:text-lg font-bold text-slate-900 mt-0.5 font-mono">
+                  {aiAnalysis?.estimatedCostLabel || "Rp 150.000 – Rp 350.000"}
+                </p>
+                <p className="text-xs text-slate-400 mt-1">
+                  The dentist may adjust the final cost based on actual clinical findings.
+                </p>
               </div>
-            )}
-
-            {aiAnalysis && (
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl">
-                <div className="flex items-center gap-2 mb-1">
-                  <Brain className="h-4 w-4 text-blue-600" />
-                  <p className="text-xs text-blue-600 font-semibold uppercase tracking-wide">Analisis AI — {priorityLabel}</p>
-                </div>
-                {aiAnalysis.reason && <p className="text-sm mt-1 text-slate-700">{aiAnalysis.reason}</p>}
-                {aiAnalysis.recommendation && <p className="text-sm text-slate-600 mt-1">💡 {aiAnalysis.recommendation}</p>}
-              </div>
-            )}
-
-            {appointment.status === "pending" && (
-              <div className="flex gap-3 pt-2">
-                <Button onClick={() => updateStatus("approved")} disabled={saving} className="bg-green-600 hover:bg-green-700 text-white">
-                  <Check className="h-4 w-4 mr-1" /> Setujui
-                </Button>
-                <Button variant="destructive" onClick={() => updateStatus("rejected")} disabled={saving}>
-                  <X className="h-4 w-4 mr-1" /> Tolak
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Treatment Form (only when approved & no record yet) */}
-        {appointment.status === "approved" && !appointment.medical_record && (
-          <Card className="border-0 shadow-lg rounded-3xl bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-green-600" />
-                Catat Hasil Perawatan
-              </CardTitle>
-              <p className="text-sm text-slate-500 mt-1">Isi formulir ini setelah perawatan selesai untuk menutup janji.</p>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div className="space-y-2">
-                <Label>Catatan Diagnosis <span className="text-red-500">*</span></Label>
-                <Textarea
-                  value={record.diagnosis_notes}
-                  onChange={e => setRecord(p => ({ ...p, diagnosis_notes: e.target.value }))}
-                  placeholder="Tulis diagnosis atau temuan klinis..."
-                  className="rounded-xl"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Tindakan yang Diberikan <span className="text-red-500">*</span></Label>
-                <Textarea
-                  value={record.treatment_given}
-                  onChange={e => setRecord(p => ({ ...p, treatment_given: e.target.value }))}
-                  placeholder="Tulis tindakan/perawatan yang dilakukan..."
-                  className="rounded-xl"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Obat yang Diresepkan <span className="text-red-500">*</span></Label>
-                  <Input
-                    value={record.medications_prescribed}
-                    onChange={e => setRecord(p => ({ ...p, medications_prescribed: e.target.value }))}
-                    placeholder="Tulis nama obat beserta dosisnya..."
-                    className="rounded-xl"
-                  />
-                </div>
-
-                {/* Treatment Cost with AI Range Reference */}
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    Biaya Perawatan (Rp)
-                    {aiAnalysis?.estimatedCostLabel && (
-                      <span className="text-xs font-normal text-slate-400">
-                        Estimasi AI: {aiAnalysis.estimatedCostLabel}
-                      </span>
-                    )}
-                  </Label>
-                  <Input
-                    type="text"
-                    value={record.treatment_cost}
-                    onChange={e => {
-                      const digits = e.target.value.replace(/\D/g, "");
-                      if (!digits) {
-                        setRecord(p => ({ ...p, treatment_cost: "" }));
-                        return;
-                      }
-                      const num = parseInt(digits, 10);
-                      setRecord(p => ({ ...p, treatment_cost: formatNumber(num) }));
-                    }}
-                    placeholder={aiAnalysis?.estimatedCost ? formatNumber(aiAnalysis.estimatedCost) : "0"}
-                    className="rounded-xl"
-                  />
-                  {/* Show warning/OK if cost is entered and AI range exists */}
-                  {costValue > 0 && aiAnalysis?.estimatedCostLabel && (
-                    <CostWarning cost={costValue} aiLabel={aiAnalysis.estimatedCostLabel} />
-                  )}
-                  {!record.treatment_cost && aiAnalysis?.estimatedCostLabel && (
-                    <p className="text-xs text-slate-400 flex items-center gap-1">
-                      <AlertTriangle className="h-3 w-3" />
-                      Dikosongkan = otomatis pakai estimasi AI ({aiAnalysis.estimatedCostLabel})
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <Button
-                onClick={saveRecord}
-                disabled={saving || !record.diagnosis_notes || !record.treatment_given || !record.medications_prescribed}
-                className="w-full sm:w-auto rounded-xl bg-green-600 hover:bg-green-700 text-white"
-                size="lg"
-              >
-                {saving
-                  ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /><span>Menyimpan...</span></>
-                  : <><Check className="h-4 w-4 mr-2" /><span>Selesaikan & Simpan Rekam Medis</span></>
-                }
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Existing Medical Record (view mode) */}
-        {appointment.medical_record && (
-          <Card className="border-0 shadow-lg rounded-3xl bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-green-600" /> Rekam Medis
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="text-xs text-slate-400">Diagnosis</p>
-                <p className="text-sm">{appointment.medical_record.diagnosis_notes}</p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-400">Tindakan</p>
-                <p className="text-sm">{appointment.medical_record.treatment_given}</p>
-              </div>
-              {appointment.medical_record.medications_prescribed && (
-                <div>
-                  <p className="text-xs text-slate-400">Obat</p>
-                  <p className="text-sm">{appointment.medical_record.medications_prescribed}</p>
-                </div>
-              )}
-              {appointment.medical_record.treatment_cost != null && (
-                <div>
-                  <p className="text-xs text-slate-400">Biaya Perawatan</p>
-                  <p className="font-semibold text-green-700">{formatCurrency(appointment.medical_record.treatment_cost)}</p>
-                  {aiAnalysis?.estimatedCostLabel && (
-                    <CostWarning cost={appointment.medical_record.treatment_cost} aiLabel={aiAnalysis.estimatedCostLabel} />
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   );

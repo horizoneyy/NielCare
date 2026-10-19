@@ -232,7 +232,7 @@ export default function IntroPage() {
     setFormSuccess("");
 
     if (!fullName.trim() || !dateOfBirth || !gender || !newPhone.trim()) {
-      setFormError("Nama, tanggal lahir, jenis kelamin, dan nomor HP wajib diisi.");
+      setFormError("Full name, date of birth, gender, and phone number are required.");
       return;
     }
 
@@ -254,17 +254,17 @@ export default function IntroPage() {
 
       if (!res.ok) {
         if (data.error === "already_registered") {
-          setFormError("Nomor HP sudah terdaftar. Mengalihkan Anda ke Pasien Lama...");
+          setFormError("Phone number already registered. Redirecting to Returning Patient...");
           setExistingPhone(newPhone.trim());
           setTimeout(() => {
             setPatientTab("existing");
-            setFormError("Nomor HP Anda sudah terdaftar di sistem. Cukup klik 'Masuk ke Dashboard'.");
+            setFormError("Your phone number is already registered in the system. Simply click 'Enter Dashboard'.");
           }, 1200);
           setFormLoading(false);
           return;
         }
 
-        setFormError(data.message || data.error || "Gagal mendaftarkan pasien.");
+        setFormError(data.message || data.error || "Failed to register patient.");
         setFormLoading(false);
         return;
       }
@@ -279,19 +279,19 @@ export default function IntroPage() {
       router.push("/patient/dashboard");
       router.refresh();
     } catch {
-      setFormError("Gagal menghubungi server klinik. Periksa koneksi internet Anda.");
+      setFormError("Failed to connect to clinic server. Please check your internet connection.");
       setFormLoading(false);
     }
   };
 
-  // ─── 2. SUBMIT PASIEN LAMA ───────────────────────────────────────────────
+  // ─── 2. SUBMIT RETURNING PATIENT ──────────────────────────────────────────
   const handleSubmitExistingPatient = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
     setFormSuccess("");
 
     if (!existingPhone.trim()) {
-      setFormError("Harap masukkan nomor HP Anda.");
+      setFormError("Please enter your phone number.");
       return;
     }
 
@@ -310,15 +310,15 @@ export default function IntroPage() {
 
       if (!res.ok) {
         if (data.error === "not_found") {
-          setFormError("Nomor HP belum terdaftar. Silakan pilih tab 'Pasien Baru' untuk mendaftar.");
+          setFormError("Phone number not registered. Please switch to 'New Patient' to register.");
         } else {
-          setFormError(data.message || data.error || "Gagal memverifikasi nomor HP.");
+          setFormError(data.message || data.error || "Failed to verify phone number.");
         }
         setFormLoading(false);
         return;
       }
 
-      setFormSuccess(`Selamat datang kembali, ${data.patient?.full_name}! Memuat dashboard Anda...`);
+      setFormSuccess(`Welcome back, ${data.patient?.full_name}! Loading your dashboard...`);
 
       if (data.email && data.password) {
         await supabase.auth.signInWithPassword({
@@ -330,7 +330,7 @@ export default function IntroPage() {
       router.push("/patient/dashboard");
       router.refresh();
     } catch {
-      setFormError("Gagal menghubungi server klinik. Periksa koneksi internet Anda.");
+      setFormError("Failed to connect to clinic server. Please check your internet connection.");
       setFormLoading(false);
     }
   };
@@ -379,13 +379,13 @@ export default function IntroPage() {
             ))}
           </div>
 
-          {/* Right Action: Login Dokter & Admin (Staff Login Bersih Tanpa Ikon) */}
+          {/* Right Action: Doctor & Admin Login */}
           <div className="hidden md:flex items-center gap-3">
             <Link
               href="/login"
               className="inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-5 py-2.5 rounded-full transition-all duration-200 shadow-xs active:scale-95"
             >
-              <span>Login Dokter & Admin</span>
+              <span>Doctor & Admin Login</span>
             </Link>
           </div>
 
@@ -426,7 +426,7 @@ export default function IntroPage() {
                 href="/login"
                 className="w-full flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-3 rounded-2xl shadow-xs"
               >
-                <span>Login Dokter & Admin</span>
+                <span>Doctor & Admin Login</span>
               </Link>
             </div>
           </div>
@@ -533,7 +533,7 @@ export default function IntroPage() {
                 >
                   <source src="/videos/gemini_generated_video_1e5ea4ae.mp4" type="video/mp4" />
                   <source src="/gemini_generated_video_1e5ea4ae.mp4" type="video/mp4" />
-                  Browser Anda tidak mendukung pemutar video.
+                  Your browser does not support the video tag.
                 </video>
               </div>
             </div>
@@ -542,7 +542,7 @@ export default function IntroPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* 3. ABOUT SECTION (VISI ANDI DANIEL & PENJELASAN SISTEM NIELCARE)    */}
+      {/* 3. ABOUT SECTION                                                    */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <section id="about" className="w-full bg-[#f8fafc] border-b border-slate-200/90 py-20 md:py-28">
         <div className="px-4 sm:px-8 max-w-7xl mx-auto">
@@ -583,14 +583,14 @@ export default function IntroPage() {
               </div>
             </div>
 
-            {/* Right Card: Penjelasan Sistem NielCare Dental (Poin-Poin Muncul Satu per Satu) */}
+            {/* Right Card: Modern Clinic Management System Explanation */}
             <div className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 flex flex-col justify-between shadow-xs space-y-6">
               <div className="space-y-5">
                 <h4 className="text-lg font-bold text-slate-900 tracking-tight">
-                  Sistem Manajemen Klinik Modern NielCare
+                  Modern Clinic Management System by NielCare
                 </h4>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Platform pelayanan kesehatan gigi terintegrasi yang menghadirkan efisiensi dan kemudahan akses bagi seluruh pasien dan staf medis:
+                  An integrated dental healthcare platform delivering efficiency and seamless access for patients and medical staff:
                 </p>
 
                 <div className="space-y-3.5 pt-1">
@@ -599,9 +599,9 @@ export default function IntroPage() {
                       01
                     </div>
                     <div>
-                      <h5 className="text-xs sm:text-sm font-bold text-slate-800">Triage Analisis Gejala AI</h5>
+                      <h5 className="text-xs sm:text-sm font-bold text-slate-800">AI Symptom Triage Analysis</h5>
                       <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-                        Evaluasi keluhan awal otomatis berbasis AI untuk menentukan tingkat urgensi dan rekomendasi dokter spesialis yang paling tepat.
+                        Automated AI-driven initial assessment to determine urgency levels and recommend the most suitable dental specialist.
                       </p>
                     </div>
                   </div>
@@ -611,9 +611,9 @@ export default function IntroPage() {
                       02
                     </div>
                     <div>
-                      <h5 className="text-xs sm:text-sm font-bold text-slate-800">Booking Cepat via Nomor HP</h5>
+                      <h5 className="text-xs sm:text-sm font-bold text-slate-800">Fast Booking via Phone Number</h5>
                       <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-                        Pendaftaran pasien baru ringkas dan reservasi pasien lama cukup satu nomor HP tanpa perlu mengingat akun atau kata sandi.
+                        Streamlined new patient registration and instant return bookings with just a phone number—no password needed.
                       </p>
                     </div>
                   </div>
@@ -623,9 +623,9 @@ export default function IntroPage() {
                       03
                     </div>
                     <div>
-                      <h5 className="text-xs sm:text-sm font-bold text-slate-800">Rekam Medis Elektronik (EMR)</h5>
+                      <h5 className="text-xs sm:text-sm font-bold text-slate-800">Electronic Medical Records (EMR)</h5>
                       <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-                        Integrasi pencatatan odontogram, riwayat diagnosa, tindakan, dan jadwal dokter secara terpusat dan aman.
+                        Centralized and secure recording of odontograms, diagnostic history, clinical procedures, and doctor schedules.
                       </p>
                     </div>
                   </div>
@@ -637,51 +637,51 @@ export default function IntroPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* 4. OUR SERVICE SECTION (VIEW ONLY - TANPA DOKTER GIGI UMUM & BADGE) */}
+      {/* 4. OUR SERVICE SECTION                                              */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <section id="services" className="w-full bg-[#f0fdf4]/50 border-b border-emerald-100 py-20 md:py-28">
         <div className="px-4 sm:px-8 max-w-7xl mx-auto">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-900 mb-10 reveal-blur">
-            Our Service
+            Our Services
           </h2>
 
-          {/* Grid Kartu Layanan Resmi NielCare (View Only - Staggered Blur Reveal per Card) */}
+          {/* Grid Kartu Layanan Resmi NielCare */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               {
                 id: "Orthodontist",
-                title: "Ortodontis",
-                desc: "Pemasangan kawat gigi (behel) konvensional dan aligner gigi transparan.",
+                title: "Orthodontics",
+                desc: "Conventional braces and clear transparent dental aligners.",
                 delay: "reveal-delay-1",
               },
               {
                 id: "Periodontist",
-                title: "Periodonsia",
-                desc: "Perawatan kesehatan gusi, radang gingivitis, dan scaling pembersihan karang mendalam.",
+                title: "Periodontics",
+                desc: "Gum health care, gingivitis treatment, and deep scaling tartar cleaning.",
                 delay: "reveal-delay-2",
               },
               {
                 id: "Endodontist",
-                title: "Endodontis",
-                desc: "Perawatan saluran akar saraf gigi, pulpa gigi berlubang dalam, dan konservasi gigi.",
+                title: "Endodontics",
+                desc: "Root canal therapy, deep cavity pulp care, and tooth conservation.",
                 delay: "reveal-delay-3",
               },
               {
                 id: "Prosthodontist",
-                title: "Prostodontis",
-                desc: "Pembuatan gigi tiruan lepasan/permanen, mahkota jembatan (crown & bridge), dan restorasi.",
+                title: "Prosthodontics",
+                desc: "Removable & permanent dentures, crowns, bridges, and restorations.",
                 delay: "reveal-delay-4",
               },
               {
                 id: "Oral Surgeon",
-                title: "Bedah Mulut",
-                desc: "Operasi cabut gigi bungsu (odontektomi), implan gigi titanium permanen, dan bedah mulut minor.",
+                title: "Oral Surgery",
+                desc: "Wisdom tooth extraction (odontectomy), permanent titanium dental implants, and minor oral surgery.",
                 delay: "reveal-delay-5",
               },
               {
                 id: "Pediatric Dentist",
-                title: "Dokter Gigi Anak",
-                desc: "Perawatan kesehatan gigi khusus bayi dan anak-anak dengan pendekatan ramah tanpa trauma.",
+                title: "Pediatric Dentistry",
+                desc: "Specialized dental care for infants and children with a friendly, trauma-free approach.",
                 delay: "reveal-delay-6",
               },
             ].map((item, idx) => (
@@ -707,17 +707,17 @@ export default function IntroPage() {
       <section id="book-online" className="w-full bg-[#f8fafc] border-b border-slate-200 py-20 md:py-28">
         <div className="px-4 sm:px-8 max-w-7xl mx-auto">
           <div className="max-w-xl mx-auto bg-white border border-emerald-200/90 rounded-3xl p-6 sm:p-10 shadow-lg reveal-blur">
-            {/* Form Header Tanpa Titik Hijau */}
+            {/* Form Header */}
             <div className="text-center mb-6">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
                 Book Online Now
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-2">
-                Nomor HP Anda menjadi pengenal unik pasien di NielCare Dental.
+                Your phone number serves as your unique patient ID at NielCare Dental.
               </p>
             </div>
 
-            {/* Tab Selector: Pasien Baru vs Pasien Lama */}
+            {/* Tab Selector: New Patient vs Returning Patient */}
             <div className="grid grid-cols-2 p-1.5 bg-slate-100 rounded-2xl mb-6 border border-slate-200/80">
               <button
                 type="button"
@@ -733,7 +733,7 @@ export default function IntroPage() {
                 }`}
               >
                 <UserPlus className="w-3.5 h-3.5" />
-                <span>Pasien Baru</span>
+                <span>New Patient</span>
               </button>
 
               <button
@@ -750,7 +750,7 @@ export default function IntroPage() {
                 }`}
               >
                 <UserCheck className="w-3.5 h-3.5" />
-                <span>Pasien Lama</span>
+                <span>Returning Patient</span>
               </button>
             </div>
 
@@ -769,19 +769,19 @@ export default function IntroPage() {
               </div>
             )}
 
-            {/* FORM PASIEN BARU */}
+            {/* FORM NEW PATIENT */}
             {patientTab === "new" && (
               <form onSubmit={handleSubmitNewPatient} className="space-y-4" autoComplete="off">
                 <div>
                   <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
-                    Nama Lengkap *
+                    Full Name *
                   </label>
                   <input
                     type="text"
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Contoh: Andi Daniel"
+                    placeholder="e.g., John Doe"
                     className="w-full px-4 py-3 rounded-2xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-hidden focus:border-emerald-600 focus:bg-white transition-all text-slate-800"
                   />
                 </div>
@@ -789,7 +789,7 @@ export default function IntroPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
-                      Tanggal Lahir *
+                      Date of Birth *
                     </label>
                     <input
                       type="date"
@@ -802,22 +802,22 @@ export default function IntroPage() {
 
                   <div>
                     <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
-                      Jenis Kelamin *
+                      Gender *
                     </label>
                     <select
                       value={gender}
                       onChange={(e) => setGender(e.target.value as "male" | "female")}
                       className="w-full px-4 py-3 rounded-2xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-hidden focus:border-emerald-600 focus:bg-white transition-all text-slate-800 h-[46px]"
                     >
-                      <option value="male">Laki-laki</option>
-                      <option value="female">Perempuan</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
                     </select>
                   </div>
                 </div>
 
                 <div>
                   <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
-                    Nomor HP (WhatsApp) *
+                    Phone Number (WhatsApp) *
                   </label>
                   <div className="relative">
                     <Phone className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -839,23 +839,23 @@ export default function IntroPage() {
                 >
                   {formLoading ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin" /> Mendaftarkan...
+                      <Loader2 className="h-4 w-4 animate-spin" /> Registering...
                     </>
                   ) : (
                     <>
-                      Daftar & Masuk ke Dashboard <ArrowRight className="h-4 w-4" />
+                      Register & Enter Dashboard <ArrowRight className="h-4 w-4" />
                     </>
                   )}
                 </button>
               </form>
             )}
 
-            {/* FORM PASIEN LAMA */}
+            {/* FORM RETURNING PATIENT */}
             {patientTab === "existing" && (
               <form onSubmit={handleSubmitExistingPatient} className="space-y-4" autoComplete="off">
                 <div>
                   <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
-                    Nomor HP Terdaftar *
+                    Registered Phone Number *
                   </label>
                   <div className="relative">
                     <Phone className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -864,12 +864,12 @@ export default function IntroPage() {
                       required
                       value={existingPhone}
                       onChange={(e) => setExistingPhone(e.target.value)}
-                      placeholder="Contoh: 08123456789"
+                      placeholder="e.g., 08123456789"
                       className="w-full pl-11 pr-4 py-3 rounded-2xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-hidden focus:border-emerald-600 focus:bg-white transition-all text-slate-800"
                     />
                   </div>
                   <p className="text-[11px] text-slate-600 mt-2 bg-slate-50 p-3 rounded-xl border border-slate-200 leading-relaxed">
-                    Sistem akan mencari nomor Anda di database dan data lama Anda akan terisi otomatis, tanpa perlu daftar nama dan tanpa kata sandi.
+                    The system searches your number in the database and automatically retrieves your profile—no name entry or password required.
                   </p>
                 </div>
 
@@ -880,11 +880,11 @@ export default function IntroPage() {
                 >
                   {formLoading ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin" /> Mencari Data Pasien...
+                      <Loader2 className="h-4 w-4 animate-spin" /> Searching Patient Data...
                     </>
                   ) : (
                     <>
-                      Masuk ke Dashboard <ArrowRight className="h-4 w-4" />
+                      Enter Dashboard <ArrowRight className="h-4 w-4" />
                     </>
                   )}
                 </button>
@@ -895,12 +895,12 @@ export default function IntroPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* 6. FOOTER / BOTTOM PAGE (CLINIC HOURS SELARAS DENGAN HUBUNGI KAMI)  */}
+      {/* 6. FOOTER / BOTTOM PAGE                                             */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       <footer className="w-full bg-slate-100 text-slate-700 pt-16 pb-12 border-t-2 border-emerald-400">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
-            {/* Brand & Description (Bersih Tanpa Ikon Gigi) */}
+            {/* Brand & Description */}
             <div className="md:col-span-5 space-y-4 reveal-blur">
               <div className="flex items-center">
                 <span className="font-bold text-2xl tracking-tight text-slate-900">
@@ -908,14 +908,14 @@ export default function IntroPage() {
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-sm">
-                NielCare Dental Clinic menyediakan pelayanan kesehatan gigi modern dengan teknologi triage AI, memastikan perawatan yang nyaman, cepat, dan profesional.
+                NielCare Dental Clinic provides modern dental healthcare powered by AI triage technology, ensuring comfortable, prompt, and professional care.
               </p>
             </div>
 
             {/* Contact Details */}
             <div className="md:col-span-3 space-y-3 reveal-blur reveal-delay-2">
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 block">
-                Hubungi Kami
+                Contact Us
               </span>
               <div className="space-y-2.5 text-xs sm:text-sm text-slate-700">
                 <a
@@ -944,7 +944,7 @@ export default function IntroPage() {
               </div>
             </div>
 
-            {/* Clinic Hours (Format Rapi & Terstruktur Sesuai Foto 1) */}
+            {/* Clinic Hours */}
             <div className="md:col-span-4 space-y-3 reveal-blur reveal-delay-3">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -954,15 +954,15 @@ export default function IntroPage() {
               </div>
               <div className="space-y-2 text-xs sm:text-sm text-slate-700 max-w-[280px]">
                 <div className="flex items-center justify-between py-1 border-b border-slate-200/80">
-                  <span className="text-slate-600 font-medium">Minggu - Kamis</span>
+                  <span className="text-slate-600 font-medium">Sunday - Thursday</span>
                   <span className="font-semibold text-slate-900">8am - 5pm</span>
                 </div>
                 <div className="flex items-center justify-between py-1 border-b border-slate-200/80">
-                  <span className="text-slate-600 font-medium">Jumat</span>
+                  <span className="text-slate-600 font-medium">Friday</span>
                   <span className="font-semibold text-slate-900">8am - 4pm</span>
                 </div>
                 <div className="flex items-center justify-between py-1">
-                  <span className="text-slate-600 font-medium">Sabtu</span>
+                  <span className="text-slate-600 font-medium">Saturday</span>
                   <span className="font-semibold text-rose-600">Closed</span>
                 </div>
               </div>
@@ -995,7 +995,7 @@ export default function IntroPage() {
                 <InstagramIcon className="w-3.5 h-3.5" /> Instagram (@andniell_)
               </a>
             </div>
-            <p className="text-slate-500">&copy; {new Date().getFullYear()} NielCare Dental. All rights reserved.</p>
+            <p className="text-slate-500">&copy; {new Date().getFullYear()} NielCare Dental. Built by a human who cares for your teeth.</p>
           </div>
         </div>
       </footer>

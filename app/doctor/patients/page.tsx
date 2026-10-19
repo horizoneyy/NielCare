@@ -1,14 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 import { Sidebar } from "@/components/shared/Sidebar";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Loader2, Users, ArrowLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils/formatters";
-import Link from "next/link";
 
 interface PatientRow {
   id: string;
@@ -20,65 +17,134 @@ interface PatientRow {
 export default function DoctorPatientsPage() {
   const [patients, setPatients] = useState<PatientRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     async function fetchPatients() {
-      // Use the doctor stats API which fetches patient data via adminClient
-      // — bypasses the users RLS "can only read own profile" restriction
-      const res = await fetch("/api/doctor/stats");
-      if (res.ok) {
-        const data = await res.json();
-        setPatients(data.patients || []);
+      try {
+        const res = await fetch("/api/doctor/stats");
+        if (res.ok) {
+          const data = await res.json();
+          setPatients(data.patients || []);
+        }
+      } catch (err) {
+        console.error("Gagal memuat pasien:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchPatients();
   }, []);
 
-  if (loading)
+  const filteredPatients = useMemo(() => {
+    if (!searchQuery.trim()) return patients;
+    const q = searchQuery.toLowerCase();
+    return patients.filter(
+      (p) =>
+        p.full_name?.toLowerCase().includes(q) ||
+        p.email?.toLowerCase().includes(q)
+    );
+  }, [patients, searchQuery]);
+
+  if (loading) {
     return (
-      <div className="min-h-screen" style={{ background: "#f0f1f5" }}>
+      <div className="min-h-screen bg-slate-50">
         <Sidebar />
-        <div className="flex items-center justify-center h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin" style={{ color: "#1e40af" }} />
-        </div>
+        <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
+          <div className="h-8 bg-slate-200 rounded w-72 mb-6"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="h-28 bg-white rounded-xl border border-slate-200"></div>
+            <div className="h-28 bg-white rounded-xl border border-slate-200"></div>
+          </div>
+        </main>
       </div>
     );
+  }
 
   return (
-    <div className="min-h-screen" style={{ background: "#f0f1f5" }}>
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased">
       <Sidebar />
-      <main className="mx-auto max-w-4xl px-4 py-8 animate-fade-in">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold" style={{ color: "#1e40af" }}>Daftar Pasien</h1>
+
+      <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
+        {/* Top Header (Clean title, no top badge, no subtitle) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+              Your Patient Directory
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="px-4 py-2 bg-white rounded-lg border border-slate-200 shadow-xs">
+              <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                Total Patients
+              </p>
+              <p className="text-base font-extrabold text-blue-700 font-mono">
+                {patients.length} Patients
+              </p>
+            </div>
+          </div>
         </div>
 
-        {patients.length === 0 ? (
-          <div className="text-center py-16">
-            <Users className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500">Belum ada pasien</p>
+        {/* Search Bar (No icon) */}
+        <div className="mb-6">
+          <div className="relative">
+            <Input
+              type="text"
+              placeholder="Search by patient name or email address..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-10 rounded-lg bg-white border-slate-200 text-xs sm:text-sm focus:border-blue-500 shadow-xs px-3.5"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 font-semibold"
+              >
+                Reset
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Patient Grid List */}
+        {filteredPatients.length === 0 ? (
+          <div className="text-center py-16 px-4 bg-white border border-dashed border-slate-200 rounded-xl">
+            <h4 className="text-sm font-bold text-slate-800">
+              {searchQuery ? "No Matching Patients" : "No Patients Yet"}
+            </h4>
+            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+              {searchQuery
+                ? `No patients found matching "${searchQuery}".`
+                : "Patients who have scheduled an appointment with you will appear here."}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {patients.map(p => (
-              <Link key={p.id} href={`/doctor/patients/${p.id}`}>
-                <Card className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer">
-                  <CardContent className="p-4 flex items-center gap-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarFallback className="bg-blue-50 text-blue-700">
+            {filteredPatients.map((p) => (
+              <Link key={p.id} href={`/doctor/patients/${p.id}`} className="group block">
+                <div className="bg-white rounded-xl p-5 border border-slate-200 hover:border-blue-400 transition-all duration-200 flex items-center justify-between gap-4 shadow-xs">
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <Avatar className="h-12 w-12 border border-slate-200 flex-shrink-0">
+                      <AvatarFallback className="bg-blue-50 text-blue-700 font-bold text-sm">
                         {getInitials(p.full_name)}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1">
-                      <p className="font-semibold text-slate-900">{p.full_name}</p>
-                      <p className="text-sm text-slate-500">{p.email}</p>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-sm text-slate-900 group-hover:text-blue-600 transition-colors truncate">
+                        {p.full_name}
+                      </h4>
+                      <p className="text-xs text-slate-500 truncate mt-0.5">{p.email}</p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold" style={{ color: "#1e40af" }}>{p.appointmentCount}</p>
-                      <p className="text-xs text-slate-400">kunjungan</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                  </div>
+
+                  <div className="text-right flex-shrink-0">
+                    <span className="text-base font-extrabold text-blue-700 font-mono">
+                      {p.appointmentCount}
+                    </span>
+                    <p className="text-[10px] text-slate-400 font-medium">Visits</p>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>

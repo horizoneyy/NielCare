@@ -6,14 +6,19 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
   // Skip Supabase checks if env vars are not set
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  if (!rawUrl || !anonKey) {
     return supabaseResponse;
   }
 
+  const supabaseUrl = rawUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    anonKey,
     {
       cookies: {
         getAll() {
@@ -49,21 +54,25 @@ export async function updateSession(request: NextRequest) {
     pathname.endsWith('.webm')
   ) {
     if (user && (pathname === '/login' || pathname === '/register')) {
-      // Already logged in — redirect to their dashboard
-      const { data: profile } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', user.id)
-        .single();
+      // Ambil role langsung dari JWT metadata jika tersedia
+      let role = user.user_metadata?.role;
+      if (!role) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        role = profile?.role;
+      }
 
-      if (profile) {
+      if (role) {
         const dashboardMap: Record<string, string> = {
           patient: '/patient/dashboard',
           doctor: '/doctor/dashboard',
           owner: '/owner/dashboard',
         };
         const url = request.nextUrl.clone();
-        url.pathname = dashboardMap[profile.role] || '/patient/dashboard';
+        url.pathname = dashboardMap[role] || '/patient/dashboard';
         return NextResponse.redirect(url);
       }
     }
@@ -77,16 +86,18 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Role-based access control
-  const { data: profile } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single();
+  // Role-based access control — prioritaskan JWT metadata untuk kecepatan <1ms
+  let role = user.user_metadata?.role;
+  if (!role) {
+    const { data: profile } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+    role = profile?.role;
+  }
 
-  if (profile) {
-    const role = profile.role;
-
+  if (role) {
     if (pathname.startsWith('/patient') && role !== 'patient') {
       const url = request.nextUrl.clone();
       url.pathname = `/${role}/dashboard`;

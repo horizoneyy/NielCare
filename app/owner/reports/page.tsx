@@ -1,129 +1,200 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Sidebar } from "@/components/shared/Sidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatDateShort } from "@/lib/utils/formatters";
-import { useRouter } from "next/navigation";
-import { Loader2, BarChart3, TrendingUp, ArrowLeft } from "lucide-react";
 
-interface DailyData { date: string; count: number }
-interface DoctorPerf { name: string; appointments: number; revenue: number }
+interface DoctorPerf {
+  name: string;
+  appointments: number;
+  revenue: number;
+}
+
+interface DailyAppt {
+  date: string;
+  count: number;
+}
 
 export default function OwnerReportsPage() {
-  const [loading, setLoading] = useState(true);
-  const [dailyAppointments, setDailyAppointments] = useState<DailyData[]>([]);
   const [doctorPerformance, setDoctorPerformance] = useState<DoctorPerf[]>([]);
+  const [dailyAppointments, setDailyAppointments] = useState<DailyAppt[]>([]);
   const [monthlyRevenue, setMonthlyRevenue] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    async function fetchReports() {
-      // --- Daily appointments (last 7 days) via API (adminClient, bypasses RLS) ---
+  async function fetchReportData() {
+    try {
       const res = await fetch("/api/owner/reports");
       if (res.ok) {
         const data = await res.json();
-        setDailyAppointments(data.dailyAppointments || []);
         setDoctorPerformance(data.doctorPerformance || []);
+        setDailyAppointments(data.dailyAppointments || []);
         setMonthlyRevenue(data.monthlyRevenue || 0);
       }
+    } catch (err) {
+      console.error("[Owner Reports Error]", err);
+    } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-    fetchReports();
+  }
+
+  useEffect(() => {
+    fetchReportData();
   }, []);
 
-  if (loading)
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchReportData();
+  };
+
+  if (loading) {
     return (
-      <div className="min-h-screen" style={{ background: "#f0f1f5" }}>
+      <div className="min-h-screen bg-slate-50">
         <Sidebar />
-        <div className="flex items-center justify-center h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin" style={{ color: "#6b21a8" }} />
-        </div>
+        <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
+          <div className="h-8 bg-slate-200 rounded w-72 mb-8"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="h-64 bg-white rounded-xl border border-slate-200"></div>
+            <div className="h-64 bg-white rounded-xl border border-slate-200"></div>
+          </div>
+          <div className="h-80 bg-white rounded-xl border border-slate-200"></div>
+        </main>
       </div>
     );
+  }
 
-  const maxDaily = Math.max(...dailyAppointments.map(d => d.count), 1);
+  const maxDaily = Math.max(...dailyAppointments.map((d) => d.count), 1);
 
   return (
-    <div className="min-h-screen" style={{ background: "#f0f1f5" }}>
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased">
       <Sidebar />
-      <main className="mx-auto max-w-6xl px-4 py-8 animate-fade-in">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold" style={{ color: "#6b21a8" }}>Laporan &amp; Analitik</h1>
+
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header Section (Clean title, no subtitle, no icons) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+              Financial Reports &amp; Clinical Analytics
+            </h1>
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-xs h-10 px-4"
+          >
+            {refreshing ? "Refreshing..." : "Refresh Report"}
+          </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Daily chart */}
-          <Card className="border-0 shadow-lg rounded-3xl bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-purple-600" />Janji Temu (7 Hari Terakhir)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-end gap-2 h-48">
-                {dailyAppointments.map(d => (
-                  <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-xs font-medium text-slate-700">{d.count}</span>
-                    <div
-                      className="w-full rounded-t-lg bg-gradient-to-t from-purple-500 to-purple-400 transition-all"
-                      style={{ height: `${(d.count / maxDaily) * 140}px`, minHeight: d.count > 0 ? "8px" : "2px" }}
-                    />
-                    <span className="text-[10px] text-slate-400">{formatDateShort(d.date).split(",")[0]}</span>
+        {/* 2 Top Overview Cards (Solid light cards, no gradients, no black) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Daily chart (7 Days) */}
+          <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col justify-between">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <h3 className="text-base font-bold text-slate-900">
+                Daily Visits (Last 7 Days)
+              </h3>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                Weekly
+              </span>
+            </div>
+
+            <div className="flex items-end gap-3 h-48 pt-6 px-2">
+              {dailyAppointments.map((d) => {
+                const heightPercent = Math.max((d.count / maxDaily) * 100, 4);
+                return (
+                  <div key={d.date} className="flex-1 flex flex-col items-center gap-2">
+                    <span className="text-xs font-bold text-slate-700">
+                      {d.count}
+                    </span>
+                    <div className="w-full bg-slate-100 rounded-t-md overflow-hidden h-36 flex items-end">
+                      <div
+                        className="w-full rounded-t-md bg-blue-600 transition-all duration-300"
+                        style={{ height: `${heightPercent}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-slate-500 text-center truncate w-full">
+                      {formatDateShort(d.date).split(",")[0]}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                );
+              })}
+            </div>
+          </div>
 
-          {/* Monthly revenue */}
-          <Card className="border-0 shadow-sm text-white" style={{ background: "#6b21a8" }}>
-            <CardContent className="p-6 flex flex-col justify-center h-full">
-              <span className="text-4xl font-black opacity-80 mb-2" style={{ fontFamily: 'monospace' }}>Rp</span>
-              <p className="text-purple-100 text-sm">Pendapatan Bulan Ini</p>
-              <p className="text-4xl font-bold mt-1">{formatCurrency(monthlyRevenue)}</p>
-              <div className="mt-4 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                <span className="text-sm text-purple-200">Diperbarui secara real-time</span>
+          {/* Monthly Revenue Card (Solid light card, no dark colors) */}
+          <div className="rounded-xl p-6 bg-emerald-50 border border-emerald-200 text-emerald-950 shadow-xs flex flex-col justify-between">
+            <div>
+              <div className="pb-3 border-b border-emerald-200/60 mb-4">
+                <span className="text-xs font-bold tracking-widest text-emerald-800 uppercase">
+                  Current Month Revenue
+                </span>
               </div>
-            </CardContent>
-          </Card>
+
+              <span className="text-xs text-emerald-800">Total Completed Transactions:</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-mono text-emerald-700 mt-1">
+                {formatCurrency(monthlyRevenue)}
+              </h2>
+
+              <p className="text-xs text-emerald-900 mt-4 leading-relaxed">
+                Automatically accumulated from electronic medical records (EMR) completed by attending dentists.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-emerald-200/60 flex items-center justify-between text-xs text-emerald-800">
+              <span className="font-semibold">Auto-synchronized</span>
+              <span className="font-bold text-emerald-900">This Month</span>
+            </div>
+          </div>
         </div>
 
-        {/* Doctor performance */}
-        <Card className="border-0 shadow-lg rounded-3xl bg-white">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-purple-600" />Performa Dokter
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {doctorPerformance.length === 0 ? (
-              <p className="text-slate-500 text-center py-8">Tidak ada data</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-500">Dokter</th>
-                      <th className="text-center py-3 px-4 text-sm font-medium text-slate-500">Janji Temu</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-500">Pendapatan</th>
+        {/* Doctor Performance Table (Solid light card) */}
+        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
+          <div className="pb-4 border-b border-slate-100 mb-5">
+            <h3 className="text-base font-bold text-slate-900">
+              Doctor Performance &amp; Productivity Report
+            </h3>
+          </div>
+
+          {doctorPerformance.length === 0 ? (
+            <div className="py-12 text-center text-slate-400 text-xs">
+              No clinical treatments recorded for this period yet.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-500 uppercase tracking-wider text-xs">
+                    <th className="py-3 px-4 font-bold">Doctor Name</th>
+                    <th className="py-3 px-4 font-bold text-center">Total Patient Visits</th>
+                    <th className="py-3 px-4 font-bold text-right">Revenue Contribution</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {doctorPerformance.map((d) => (
+                    <tr key={d.name} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3.5 px-4 font-bold text-slate-900">
+                        Dr. {d.name}
+                      </td>
+                      <td className="py-3.5 px-4 text-center font-mono font-medium text-slate-700">
+                        {d.appointments} Appointments
+                      </td>
+                      <td className="py-3.5 px-4 text-right font-mono font-bold text-emerald-700 text-sm">
+                        {formatCurrency(d.revenue)}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {doctorPerformance.map(d => (
-                      <tr key={d.name} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-3 px-4 font-medium text-slate-900">Dr. {d.name}</td>
-                        <td className="py-3 px-4 text-center text-slate-700">{d.appointments}</td>
-                        <td className="py-3 px-4 text-right font-semibold text-purple-600">{formatCurrency(d.revenue)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

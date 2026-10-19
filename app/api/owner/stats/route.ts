@@ -19,43 +19,44 @@ export async function GET(request: NextRequest) {
   }
 
   const adminSupabase = await createAdminClient();
-  const { data: userData } = await adminSupabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .single();
 
-  if (userData?.role !== "owner") {
+  // Jalankan query secara paralel via Promise.all
+  const [
+    userProfileRes,
+    patientCountRes,
+    doctorCountRes,
+    appointmentsRes
+  ] = await Promise.all([
+    adminSupabase.from("users").select("role").eq("id", user.id).single(),
+    adminSupabase.from("users").select("id", { count: "exact", head: true }).eq("role", "patient"),
+    adminSupabase.from("doctors").select("id", { count: "exact", head: true }).eq("is_active", true),
+    adminSupabase.from("appointments").select("id, appointment_date, status, emergency_level, medical_records(treatment_cost)").order("appointment_date", { ascending: false }),
+  ]);
+
+  const userData = userProfileRes.data;
+  if (userData?.role !== "owner" && user.user_metadata?.role !== "owner") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { count: patientCount } = await adminSupabase
-    .from("users")
-    .select("*", { count: "exact", head: true })
-    .eq("role", "patient");
+  const allAppointments = appointmentsRes.data || [];
+  const patientCount = patientCountRes.count || 0;
+  const doctorCount = doctorCountRes.count || 0;
+  const totalAppointments = allAppointments.length;
 
-  const { count: doctorCount } = await adminSupabase
-    .from("doctors")
-    .select("*", { count: "exact", head: true })
-    .eq("is_active", true);
-
-  const { count: totalAppointmentsCount } = await adminSupabase
-    .from("appointments")
-    .select("id", { count: "exact", head: true });
-
-  // Fetch done appointments with medical_records for actual revenue
-  const { data: doneAppointments } = await adminSupabase
-    .from("appointments")
-    .select("appointment_date, medical_records(treatment_cost)")
-    .eq("status", "done");
-
-  const totalAppointments = totalAppointmentsCount || 0;
-  const totalRevenue = (doneAppointments || []).reduce(
+  const doneAppointments = allAppointments.filter(a => a.status === "done");
+  const totalRevenue = doneAppointments.reduce(
     (sum: number, a: any) => sum + getActualCost(a),
     0
   );
 
-  // Monthly breakdown — last 6 months
+  // Breakdown prioritas untuk widget AI Triage
+  const priorityBreakdown = {
+    critical: allAppointments.filter(a => a.emergency_level === "critical").length,
+    moderate: allAppointments.filter(a => a.emergency_level === "moderate").length,
+    routine: allAppointments.filter(a => a.emergency_level === "routine").length,
+  };
+
+  // Komputasi 6 bulan terakhir dalam memori tanpa network round-trip tambahan
   const monthlyBreakdown: { month: string; label: string; appointments: number; revenue: number }[] = [];
   const now = new Date();
   for (let i = 5; i >= 0; i--) {
@@ -75,37 +76,29 @@ export async function GET(request: NextRequest) {
     const monthStr = startStr.slice(0, 7);
     const label = start.toLocaleString("id-ID", { month: "short", year: "numeric" });
 
-    const { count: monthApptsCount } = await adminSupabase
-      .from("appointments")
-      .select("id", { count: "exact", head: true })
-      .gte("appointment_date", startStr)
-      .lt("appointment_date", endStr);
-
-    const { data: monthDone } = await adminSupabase
-      .from("appointments")
-      .select("medical_records(treatment_cost)")
-      .eq("status", "done")
-      .gte("appointment_date", startStr)
-      .lt("appointment_date", endStr);
-
-    const monthRevenue = (monthDone || []).reduce(
-      (sum: number, a: any) => sum + getActualCost(a),
-      0
+    const monthAppts = allAppointments.filter(
+      a => a.appointment_date >= startStr && a.appointment_date < endStr
     );
+
+    const monthRevenue = monthAppts
+      .filter(a => a.status === "done")
+      .reduce((sum: number, a: any) => sum + getActualCost(a), 0);
 
     monthlyBreakdown.push({
       month: monthStr,
       label,
-      appointments: monthApptsCount || 0,
+      appointments: monthAppts.length,
       revenue: monthRevenue,
     });
   }
 
   return NextResponse.json({
-    totalPatients: patientCount || 0,
+    totalPatients: patientCount,
     totalAppointments,
-    totalDoctors: doctorCount || 0,
+    totalDoctors: doctorCount,
     totalRevenue,
     monthlyBreakdown,
+    priorityBreakdown,
+    recentAppointments: allAppointments.slice(0, 5),
   });
 }
