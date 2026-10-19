@@ -30,10 +30,10 @@ function CostWarning({ cost, aiLabel }: { cost: number; aiLabel?: string }) {
     const excess = formatCurrency(cost - range.max);
     return (
       <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg mt-2 text-amber-900 text-xs">
-        <p className="font-bold">Biaya Melebihi Estimasi AI</p>
+        <p className="font-bold">Cost Exceeds AI Estimate</p>
         <p className="mt-0.5 leading-relaxed">
-          Biaya yang dimasukkan <strong>{formatCurrency(cost)}</strong> melebihi batas atas estimasi AI (
-          <strong>{aiLabel}</strong>) sebesar <strong>{excess}</strong>.
+          The entered cost <strong>{formatCurrency(cost)}</strong> exceeds the AI upper estimate (
+          <strong>{aiLabel}</strong>) by <strong>{excess}</strong>.
         </p>
       </div>
     );
@@ -42,17 +42,17 @@ function CostWarning({ cost, aiLabel }: { cost: number; aiLabel?: string }) {
     const diff = formatCurrency(range.min - cost);
     return (
       <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mt-2 text-blue-900 text-xs">
-        <p className="font-bold">Biaya Di Bawah Estimasi AI</p>
+        <p className="font-bold">Cost Below AI Estimate</p>
         <p className="mt-0.5 leading-relaxed">
-          Biaya yang dimasukkan <strong>{formatCurrency(cost)}</strong> berada di bawah batas bawah estimasi AI (
-          <strong>{aiLabel}</strong>) sebesar <strong>{diff}</strong>.
+          The entered cost <strong>{formatCurrency(cost)}</strong> is below the AI lower estimate (
+          <strong>{aiLabel}</strong>) by <strong>{diff}</strong>.
         </p>
       </div>
     );
   }
   return (
     <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg mt-2 text-xs">
-      <p className="font-semibold text-emerald-700">Biaya sesuai dengan perkiraan rentang AI klinis ✓</p>
+      <p className="font-semibold text-emerald-700">Cost is within the clinical AI estimated range ✓</p>
     </div>
   );
 }
@@ -145,14 +145,14 @@ export default function DoctorAppointmentDetailPage() {
       });
       if (!res.ok) {
         const errorData = await res.json();
-        alert(`Gagal menyimpan: ${errorData.error || "Terjadi kesalahan"}`);
+        alert(`Failed to save: ${errorData.error || "An error occurred"}`);
         setSaving(false);
         return;
       }
       setAppointment((prev) => (prev ? { ...prev, status: "done" } : null));
       router.refresh();
     } catch (e) {
-      alert("Gagal menghubungi server. Periksa koneksi internet Anda.");
+      alert("Failed to connect to the server. Please check your internet connection.");
     } finally {
       setSaving(false);
     }
@@ -178,13 +178,13 @@ export default function DoctorAppointmentDetailPage() {
       <div className="min-h-screen bg-slate-50">
         <Sidebar />
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
-          <h2 className="text-lg font-bold text-slate-800">Data Janji Tidak Ditemukan</h2>
+          <h2 className="text-lg font-bold text-slate-800">Appointment Not Found</h2>
           <p className="text-xs text-slate-500 mt-1 max-w-sm">
-            Janji temu mungkin telah dipindahkan atau data tidak dapat dimuat.
+            The appointment may have been rescheduled or the data could not be loaded.
           </p>
           <Link href="/doctor/appointments" className="mt-4">
             <Button size="sm" variant="outline" className="rounded-lg text-xs font-semibold">
-              Kembali ke Daftar Janji Temu
+              Back to Appointments List
             </Button>
           </Link>
         </div>
@@ -205,9 +205,9 @@ export default function DoctorAppointmentDetailPage() {
   }
 
   const level = appointment.emergency_level || "routine";
-  const priorityLabel = EMERGENCY_LEVEL_LABELS[level] || "Rutin";
+  const priorityLabel = EMERGENCY_LEVEL_LABELS[level] || "Routine";
   const appointmentTitle =
-    aiAnalysis?.possibleCondition || appointment.symptom_description?.slice(0, 50) || "Pemeriksaan Gigi";
+    aiAnalysis?.possibleCondition || appointment.symptom_description?.slice(0, 50) || "Dental Examination";
   const costValue = parseInt((record.treatment_cost || "").replace(/\D/g, ""), 10) || 0;
 
   return (
@@ -235,7 +235,7 @@ export default function DoctorAppointmentDetailPage() {
                   disabled={saving}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs h-10 px-4"
                 >
-                  Setujui Kunjungan
+                  Approve Appointment
                 </Button>
                 <Button
                   variant="outline"
@@ -243,7 +243,7 @@ export default function DoctorAppointmentDetailPage() {
                   disabled={saving}
                   className="border-red-200 text-red-600 hover:bg-red-50 font-medium rounded-lg text-xs h-10 px-4"
                 >
-                  Tolak
+                  Decline
                 </Button>
               </>
             )}
@@ -254,7 +254,7 @@ export default function DoctorAppointmentDetailPage() {
                 size="sm"
                 className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-medium rounded-lg text-xs h-10 px-4"
               >
-                Kembali
+                Back
               </Button>
             </Link>
           </div>
@@ -272,24 +272,24 @@ export default function DoctorAppointmentDetailPage() {
             {/* Patient & Consultation Summary Card */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">
-                Informasi Jadwal &amp; Pasien
+                Schedule &amp; Patient Information
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 p-4 rounded-lg bg-slate-50 border border-slate-100 mb-4">
                 <div>
-                  <span className="text-xs text-slate-500">Nama Pasien</span>
+                  <span className="text-xs text-slate-500">Patient Name</span>
                   <p className="text-sm font-bold text-slate-900 mt-0.5">
                     {appointment.patient?.full_name || "-"}
                   </p>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-500">Tanggal Kunjungan</span>
+                  <span className="text-xs text-slate-500">Visit Date</span>
                   <p className="text-sm font-bold text-slate-900 mt-0.5">
                     {formatDate(appointment.appointment_date)}
                   </p>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-500">Jam Praktik</span>
+                  <span className="text-xs text-slate-500">Practice Time</span>
                   <p className="text-sm font-bold text-blue-700 mt-0.5">
                     {formatTime(appointment.slot_time)} WIB
                   </p>
@@ -299,7 +299,7 @@ export default function DoctorAppointmentDetailPage() {
               {appointment.symptom_description && (
                 <div>
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Keluhan Mandiri Pasien
+                    Patient Self-Reported Symptoms
                   </span>
                   <p className="text-xs sm:text-sm text-slate-700 bg-slate-50 p-3.5 rounded-lg border border-slate-100 mt-1 leading-relaxed">
                     &ldquo;{appointment.symptom_description}&rdquo;
@@ -313,10 +313,10 @@ export default function DoctorAppointmentDetailPage() {
               <div className="bg-blue-50/50 rounded-xl p-6 border border-blue-200 shadow-xs">
                 <div className="flex items-center justify-between pb-3 border-b border-blue-100 mb-4">
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">Hasil Triage AI Klinis</h3>
+                    <h3 className="text-sm font-bold text-slate-900">Clinical AI Triage Result</h3>
                   </div>
                   <span className="px-2.5 py-1 rounded text-xs font-bold bg-blue-100 text-blue-800">
-                    Kategori: {priorityLabel}
+                    Category: {priorityLabel}
                   </span>
                 </div>
 
@@ -324,7 +324,7 @@ export default function DoctorAppointmentDetailPage() {
                   {aiAnalysis.reason && (
                     <div>
                       <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                        Indikasi Awal
+                        Initial Indication
                       </span>
                       <p className="text-xs sm:text-sm text-slate-700 mt-1 bg-white p-3 rounded-lg border border-blue-100 leading-relaxed">
                         {aiAnalysis.reason}
@@ -334,7 +334,7 @@ export default function DoctorAppointmentDetailPage() {
 
                   {aiAnalysis.recommendation && (
                     <div className="p-3 bg-white border border-blue-100 rounded-lg text-xs text-slate-700">
-                      <strong className="text-blue-900 block mb-0.5">Saran Penanganan:</strong>
+                      <strong className="text-blue-900 block mb-0.5">Recommended Care:</strong>
                       {aiAnalysis.recommendation}
                     </div>
                   )}
@@ -346,18 +346,18 @@ export default function DoctorAppointmentDetailPage() {
             {appointment.status === "approved" && !appointment.medical_record && (
               <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
                 <div className="pb-4 border-b border-slate-100 mb-5">
-                  <h3 className="text-base font-bold text-slate-900">Catat Rekam Medis (EMR)</h3>
+                  <h3 className="text-base font-bold text-slate-900">Electronic Medical Record (EMR)</h3>
                 </div>
 
                 <div className="space-y-5">
                   <div className="space-y-2">
                     <Label className="text-xs font-bold text-slate-700">
-                      Catatan Diagnosis <span className="text-red-500">*</span>
+                      Diagnosis Notes <span className="text-red-500">*</span>
                     </Label>
                     <Textarea
                       value={record.diagnosis_notes}
                       onChange={(e) => setRecord((p) => ({ ...p, diagnosis_notes: e.target.value }))}
-                      placeholder="Contoh: Pulpitis ireversibel gigi 36..."
+                      placeholder="e.g., Irreversible pulpitis tooth 36..."
                       className="rounded-lg border-slate-200 text-sm focus:border-blue-500"
                       rows={3}
                     />
@@ -365,12 +365,12 @@ export default function DoctorAppointmentDetailPage() {
 
                   <div className="space-y-2">
                     <Label className="text-xs font-bold text-slate-700">
-                      Tindakan Klinis yang Dilakukan <span className="text-red-500">*</span>
+                      Clinical Treatment Performed <span className="text-red-500">*</span>
                     </Label>
                     <Textarea
                       value={record.treatment_given}
                       onChange={(e) => setRecord((p) => ({ ...p, treatment_given: e.target.value }))}
-                      placeholder="Contoh: Pembersihan kavitas, tambalan sementara..."
+                      placeholder="e.g., Cavity preparation, temporary restoration..."
                       className="rounded-lg border-slate-200 text-sm focus:border-blue-500"
                       rows={3}
                     />
@@ -379,21 +379,21 @@ export default function DoctorAppointmentDetailPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label className="text-xs font-bold text-slate-700">
-                        Resep Obat (Opsional)
+                        Prescription Medications (Optional)
                       </Label>
                       <Input
                         value={record.medications_prescribed}
                         onChange={(e) =>
                           setRecord((p) => ({ ...p, medications_prescribed: e.target.value }))
                         }
-                        placeholder="Contoh: Amoxicillin 500mg, Asam Mefenamat..."
+                        placeholder="e.g., Amoxicillin 500mg, Mefenamic Acid..."
                         className="rounded-lg border-slate-200 text-sm focus:border-blue-500"
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label className="text-xs font-bold text-slate-700">
-                        Biaya Tindakan (Rp)
+                        Treatment Cost (IDR)
                       </Label>
                       <Input
                         type="text"
@@ -424,7 +424,7 @@ export default function DoctorAppointmentDetailPage() {
                       disabled={saving || !record.diagnosis_notes || !record.treatment_given}
                       className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs h-10 px-6"
                     >
-                      {saving ? "Menyimpan Rekam Medis..." : "Selesaikan Pemeriksaan & Simpan EMR"}
+                      {saving ? "Saving Medical Record..." : "Complete Visit & Save EMR"}
                     </Button>
                   </div>
                 </div>
@@ -436,17 +436,17 @@ export default function DoctorAppointmentDetailPage() {
               <div className="bg-white rounded-xl p-6 border border-emerald-200 shadow-xs">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
                   <h3 className="text-base font-bold text-slate-900">
-                    Rekam Medis Pasien Terverifikasi
+                    Verified Patient Medical Record
                   </h3>
                   <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
-                    Selesai Dirawat
+                    Treatment Completed
                   </span>
                 </div>
 
                 <div className="space-y-4">
                   <div>
                     <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">
-                      Diagnosis Dokter
+                      Doctor&apos;s Diagnosis
                     </span>
                     <p className="text-sm text-slate-800 mt-1 font-medium bg-slate-50 p-3.5 rounded-lg border border-slate-100 leading-relaxed">
                       {appointment.medical_record.diagnosis_notes}
@@ -455,7 +455,7 @@ export default function DoctorAppointmentDetailPage() {
 
                   <div>
                     <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">
-                      Tindakan Medis
+                      Medical Treatment
                     </span>
                     <p className="text-sm text-slate-800 mt-1 font-medium bg-slate-50 p-3.5 rounded-lg border border-slate-100 leading-relaxed">
                       {appointment.medical_record.treatment_given}
@@ -465,7 +465,7 @@ export default function DoctorAppointmentDetailPage() {
                   {appointment.medical_record.medications_prescribed && (
                     <div>
                       <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">
-                        Resep Obat
+                        Prescriptions
                       </span>
                       <p className="text-sm text-slate-800 mt-1 font-medium bg-blue-50/40 p-3.5 rounded-lg border border-blue-100 leading-relaxed">
                         {appointment.medical_record.medications_prescribed}
@@ -475,7 +475,7 @@ export default function DoctorAppointmentDetailPage() {
 
                   {appointment.medical_record.treatment_cost != null && (
                     <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                      <span className="text-xs font-semibold text-slate-600">Total Biaya Tindakan:</span>
+                      <span className="text-xs font-semibold text-slate-600">Total Treatment Cost:</span>
                       <span className="text-lg font-extrabold text-slate-900 font-mono">
                         {formatCurrency(appointment.medical_record.treatment_cost)}
                       </span>
@@ -490,15 +490,15 @@ export default function DoctorAppointmentDetailPage() {
           <div className="space-y-6">
             <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                Status Pasien
+                Patient Status
               </h4>
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between py-1.5 border-b border-slate-100">
-                  <span className="text-slate-500">Status Janji:</span>
+                  <span className="text-slate-500">Appointment Status:</span>
                   <StatusBadge status={appointment.status} />
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-slate-100">
-                  <span className="text-slate-500">Tingkat Urgensi:</span>
+                  <span className="text-slate-500">Urgency Level:</span>
                   <EmergencyBadge level={appointment.emergency_level} />
                 </div>
                 <div className="flex justify-between py-1.5">
@@ -517,7 +517,7 @@ export default function DoctorAppointmentDetailPage() {
                     size="sm"
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold"
                   >
-                    Setujui Janji Temu
+                    Approve Appointment
                   </Button>
                   <Button
                     onClick={() => updateStatus("rejected")}
@@ -526,23 +526,23 @@ export default function DoctorAppointmentDetailPage() {
                     variant="outline"
                     className="w-full border-red-200 text-red-600 hover:bg-red-50 rounded-lg text-xs font-semibold"
                   >
-                    Tolak Permintaan
+                    Decline Request
                   </Button>
                 </div>
               )}
             </div>
 
             <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
-              <h4 className="text-xs font-bold text-slate-900 mb-3">Perkiraan Biaya AI</h4>
+              <h4 className="text-xs font-bold text-slate-900 mb-3">AI Cost Estimate</h4>
               <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-100">
                 <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Estimasi AI Triage
+                  AI Triage Estimate
                 </span>
                 <p className="text-base sm:text-lg font-bold text-slate-900 mt-0.5 font-mono">
                   {aiAnalysis?.estimatedCostLabel || "Rp 150.000 – Rp 350.000"}
                 </p>
                 <p className="text-xs text-slate-400 mt-1">
-                  Dokter berwenang mengubah angka final sesuai kondisi klinis dan tindakan nyata.
+                  The dentist may adjust the final cost based on actual clinical findings.
                 </p>
               </div>
             </div>

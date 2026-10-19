@@ -87,24 +87,24 @@ export default function DoctorDashboard() {
 
   const statCards = [
     {
-      label: "Antrean Hari Ini",
+      label: "Today's Queue",
       value: stats.todayAppointments.toString(),
-      subtext: "Pasien terjadwal hari ini",
+      subtext: "Scheduled patients today",
     },
     {
-      label: "Menunggu Approval",
+      label: "Pending Approval",
       value: stats.pendingAppointments.toString(),
-      subtext: "Permintaan reservasi baru",
+      subtext: "New reservation requests",
     },
     {
-      label: "Total Pasien Ditangani",
+      label: "Total Patients Treated",
       value: stats.totalPatients.toString(),
-      subtext: "Pasien terdaftar di klinik",
+      subtext: "Patients registered in clinic",
     },
     {
-      label: "Tindakan Selesai",
+      label: "Completed Treatments",
       value: stats.completedThisMonth.toString(),
-      subtext: "Bulan berjalan",
+      subtext: "Current month",
     },
   ];
 
@@ -113,11 +113,11 @@ export default function DoctorDashboard() {
       <Sidebar />
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* DOCTOR HEADER (No top badges, no subtitle, clean title) */}
+        {/* DOCTOR HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-              Dashboard Praktik Dokter
+              Doctor Practice Dashboard
             </h1>
           </div>
 
@@ -128,7 +128,7 @@ export default function DoctorDashboard() {
                 size="sm"
                 className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-xs h-10 px-4"
               >
-                Cek Kalender Jadwal
+                View Practice Schedule
               </Button>
             </Link>
 
@@ -137,13 +137,13 @@ export default function DoctorDashboard() {
                 size="sm"
                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs h-10 px-4"
               >
-                Semua Janji Temu
+                All Appointments
               </Button>
             </Link>
           </div>
         </div>
 
-        {/* KPI METRICS CARDS (No icons, solid colors, clean) */}
+        {/* KPI METRICS CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {statCards.map((s) => (
             <div
@@ -165,36 +165,36 @@ export default function DoctorDashboard() {
           ))}
         </div>
 
-        {/* TODAY'S QUEUE & APPOINTMENTS (No icons) */}
+        {/* TODAY'S QUEUE & APPOINTMENTS */}
         <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
             <div>
               <h3 className="text-base font-bold text-slate-900">
-                Antrean Janji Temu Hari Ini
+                Today&apos;s Patient Queue
               </h3>
             </div>
             <Link
               href="/doctor/appointments"
               className="text-xs font-semibold text-blue-600 hover:underline"
             >
-              Kelola Semua Antrean
+              Manage All Queues
             </Link>
           </div>
 
           {todayList.length === 0 ? (
             <div className="text-center py-16 px-4 bg-slate-50 border border-dashed border-slate-200 rounded-lg">
               <h4 className="text-sm font-bold text-slate-800">
-                Tidak Ada Antrean Pasien Hari Ini
+                No Patient Queue Today
               </h4>
               <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                Semua jadwal praktik untuk hari ini kosong atau belum ada booking masuk.
+                All practice schedules for today are clear or no bookings have been made.
               </p>
               <Link href="/doctor/schedule">
                 <Button
                   size="sm"
                   className="mt-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold"
                 >
-                  Lihat Jadwal Lengkap
+                  View Full Schedule
                 </Button>
               </Link>
             </div>

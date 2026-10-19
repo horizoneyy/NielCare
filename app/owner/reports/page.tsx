@@ -77,7 +77,7 @@ export default function OwnerReportsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-              Laporan Keuangan &amp; Analitik Klinis
+              Financial Reports &amp; Clinical Analytics
             </h1>
           </div>
 
@@ -88,7 +88,7 @@ export default function OwnerReportsPage() {
             disabled={refreshing}
             className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-xs h-10 px-4"
           >
-            {refreshing ? "Menyegarkan..." : "Segarkan Laporan"}
+            {refreshing ? "Refreshing..." : "Refresh Report"}
           </Button>
         </div>
 
@@ -98,10 +98,10 @@ export default function OwnerReportsPage() {
           <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
               <h3 className="text-base font-bold text-slate-900">
-                Kunjungan Harian (7 Hari Terakhir)
+                Daily Visits (Last 7 Days)
               </h3>
               <span className="text-xs font-semibold px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200">
-                Mingguan
+                Weekly
               </span>
             </div>
 
@@ -133,23 +133,23 @@ export default function OwnerReportsPage() {
             <div>
               <div className="pb-3 border-b border-emerald-200/60 mb-4">
                 <span className="text-xs font-bold tracking-widest text-emerald-800 uppercase">
-                  Penerimaan Bulan Berjalan
+                  Current Month Revenue
                 </span>
               </div>
 
-              <span className="text-xs text-emerald-800">Total Transaksi Selesai:</span>
+              <span className="text-xs text-emerald-800">Total Completed Transactions:</span>
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-mono text-emerald-700 mt-1">
                 {formatCurrency(monthlyRevenue)}
               </h2>
 
               <p className="text-xs text-emerald-900 mt-4 leading-relaxed">
-                Diakumulasi secara otomatis dari rekam medis elektronik (EMR) yang telah diselesaikan oleh dokter pemeriksa.
+                Automatically accumulated from electronic medical records (EMR) completed by attending dentists.
               </p>
             </div>
 
             <div className="pt-4 border-t border-emerald-200/60 flex items-center justify-between text-xs text-emerald-800">
-              <span className="font-semibold">Sinkronisasi otomatis</span>
-              <span className="font-bold text-emerald-900">Bulan Ini</span>
+              <span className="font-semibold">Auto-synchronized</span>
+              <span className="font-bold text-emerald-900">This Month</span>
             </div>
           </div>
         </div>
@@ -158,22 +158,22 @@ export default function OwnerReportsPage() {
         <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
           <div className="pb-4 border-b border-slate-100 mb-5">
             <h3 className="text-base font-bold text-slate-900">
-              Laporan Kinerja &amp; Produktivitas Dokter
+              Doctor Performance &amp; Productivity Report
             </h3>
           </div>
 
           {doctorPerformance.length === 0 ? (
             <div className="py-12 text-center text-slate-400 text-xs">
-              Belum ada data tindakan medis tercatat untuk periode ini.
+              No clinical treatments recorded for this period yet.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-200 text-slate-500 uppercase tracking-wider text-xs">
-                    <th className="py-3 px-4 font-bold">Nama Dokter</th>
-                    <th className="py-3 px-4 font-bold text-center">Total Kunjungan Pasien</th>
-                    <th className="py-3 px-4 font-bold text-right">Kontribusi Pendapatan</th>
+                    <th className="py-3 px-4 font-bold">Doctor Name</th>
+                    <th className="py-3 px-4 font-bold text-center">Total Patient Visits</th>
+                    <th className="py-3 px-4 font-bold text-right">Revenue Contribution</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -183,7 +183,7 @@ export default function OwnerReportsPage() {
                         Dr. {d.name}
                       </td>
                       <td className="py-3.5 px-4 text-center font-mono font-medium text-slate-700">
-                        {d.appointments} Janji Temu
+                        {d.appointments} Appointments
                       </td>
                       <td className="py-3.5 px-4 text-right font-mono font-bold text-emerald-700 text-sm">
                         {formatCurrency(d.revenue)}

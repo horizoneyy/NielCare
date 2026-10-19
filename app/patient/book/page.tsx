@@ -14,13 +14,13 @@ import { EMERGENCY_LEVEL_LABELS } from "@/types";
 import type { Doctor, DoctorSchedule, BookingState, AIAnalysisResult } from "@/types";
 
 const SPECIALIZATIONS = [
-  { id: "General Dentist", label: "Dokter Gigi Umum", title: "" },
-  { id: "Orthodontist", label: "Ortodontis", title: "Sp.Ort" },
-  { id: "Periodontist", label: "Periodonsia", title: "Sp.Perio" },
-  { id: "Endodontist", label: "Endodontis", title: "Sp.KG" },
-  { id: "Prosthodontist", label: "Prostodontis", title: "Sp.Pros" },
-  { id: "Oral Surgeon", label: "Bedah Mulut", title: "Sp.BM" },
-  { id: "Pediatric Dentist", label: "Dokter Gigi Anak", title: "Sp.KGA" },
+  { id: "General Dentist", label: "General Dentist", title: "" },
+  { id: "Orthodontist", label: "Orthodontist", title: "Sp.Ort" },
+  { id: "Periodontist", label: "Periodontist", title: "Sp.Perio" },
+  { id: "Endodontist", label: "Endodontist", title: "Sp.KG" },
+  { id: "Prosthodontist", label: "Prosthodontist", title: "Sp.Pros" },
+  { id: "Oral Surgeon", label: "Oral Surgeon", title: "Sp.BM" },
+  { id: "Pediatric Dentist", label: "Pediatric Dentist", title: "Sp.KGA" },
 ];
 
 const PRIORITY_CONFIG = {
@@ -87,7 +87,7 @@ export default function BookAppointmentPage() {
 
   const handleAnalyzeSymptoms = async () => {
     if (!booking.symptoms || booking.symptoms.trim().length < 10) {
-      setSymptomError("Mohon deskripsikan keluhan Anda minimal 10 karakter.");
+      setSymptomError("Please describe your symptoms with at least 10 characters.");
       return;
     }
     setSymptomError("");
@@ -101,7 +101,7 @@ export default function BookAppointmentPage() {
       });
 
       if (!res.ok) {
-        throw new Error("Gagal menganalisis gejala.");
+        throw new Error("Failed to analyze symptoms.");
       }
 
       const result: AIAnalysisResult = await res.json();
@@ -121,7 +121,7 @@ export default function BookAppointmentPage() {
       setStep(2);
     } catch (err) {
       console.error(err);
-      setSymptomError("Gagal menghubungi layanan analisis AI. Anda tetap dapat melanjutkan pemilihan dokter.");
+      setSymptomError("Failed to reach AI triage service. You can still proceed with doctor selection.");
       setStep(2);
     } finally {
       setAnalyzing(false);
@@ -232,7 +232,7 @@ export default function BookAppointmentPage() {
 
       if (!res.ok) {
         const errorData = await res.json();
-        setBookingError(errorData.error || "Gagal membuat janji temu.");
+        setBookingError(errorData.error || "Failed to create appointment.");
         setSubmitting(false);
         return;
       }
@@ -240,7 +240,7 @@ export default function BookAppointmentPage() {
       router.push("/patient/appointments");
     } catch (err) {
       console.error(err);
-      setBookingError("Gagal terhubung ke server klinik.");
+      setBookingError("Failed to connect to the clinic server.");
     } finally {
       setSubmitting(false);
     }
@@ -249,18 +249,18 @@ export default function BookAppointmentPage() {
   const today = new Date().toISOString().split("T")[0];
   const level = booking.emergencyLevel || "routine";
   const priorityCfg = PRIORITY_CONFIG[level];
-  const stepLabels = ["Gejala & Analisis AI", "Pilih Dokter & Slot", "Konfirmasi"];
-  const DAYS_OF_WEEK = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const stepLabels = ["Symptoms & AI Triage", "Choose Doctor & Slot", "Confirmation"];
+  const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased">
       <Sidebar />
 
       <main className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header Section (Clean title, no top badge, no subtitle) */}
+        {/* Header Section */}
         <div className="pb-6 border-b border-slate-200 mb-8">
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-            Buat Janji Temu Pemeriksaan
+            Book Examination Appointment
           </h1>
         </div>
 
@@ -298,23 +298,23 @@ export default function BookAppointmentPage() {
             <div className="bg-white rounded-xl p-6 sm:p-8 border border-slate-200 shadow-xs">
               <div className="mb-5">
                 <h3 className="text-base sm:text-lg font-bold text-slate-900">
-                  Ceritakan Gejala atau Keluhan Anda
+                  Describe Your Dental Symptoms
                 </h3>
               </div>
 
               {/* Sample symptom chips */}
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-5">
                 <p className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2.5">
-                  Contoh Keluhan (Klik untuk menambahkan):
+                  Example Symptoms (Click to add):
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    "Sakit gigi geraham belakang berdenyut hebat",
-                    "Gusi bengkak bernanah dan berdarah",
-                    "Gigi berlubang dan ngilu saat minum dingin",
-                    "Ingin konsultasi pasang behel kawat gigi",
-                    "Pembersihan rutin karang gigi (scaling)",
-                    "Gigi goyang atau patah terbentur",
+                    "Severe throbbing pain in back molar",
+                    "Swollen bleeding gums with pus",
+                    "Cavity with sharp sensitivity to cold",
+                    "Consultation for braces or aligners",
+                    "Routine scaling and tartar removal",
+                    "Loose or chipped tooth from impact",
                   ].map((ex) => (
                     <button
                       key={ex}
@@ -339,7 +339,7 @@ export default function BookAppointmentPage() {
                     ? "border-rose-300 bg-rose-50/50"
                     : "border-slate-200 focus:border-blue-500"
                 }`}
-                placeholder="Ceritakan detail keluhan Anda... (contoh: gigi geraham belakang sakit berdenyut sudah 2 hari, gusi agak bengkak, tidak bisa mengunyah makanan keras)"
+                placeholder="Describe your symptoms in detail... (e.g., lower back molar has been throbbing for 2 days, gums slightly swollen, unable to chew on the left side)"
                 value={booking.symptoms || ""}
                 onChange={(e) => {
                   setBooking((prev) => ({ ...prev, symptoms: e.target.value }));
@@ -356,14 +356,14 @@ export default function BookAppointmentPage() {
                       : "text-emerald-700 font-medium"
                   }
                 >
-                  {(booking.symptoms || "").length} / 1000 karakter
-                  {(booking.symptoms || "").length < 10 && " (minimal 10 karakter)"}
+                  {(booking.symptoms || "").length} / 1000 characters
+                  {(booking.symptoms || "").length < 10 && " (minimum 10 characters)"}
                 </span>
               </div>
 
               {symptomError && (
                 <div className="p-4 bg-rose-50 border border-rose-200 rounded-lg mt-4 text-xs text-rose-800">
-                  <p className="font-bold">Perhatian:</p>
+                  <p className="font-bold">Attention:</p>
                   <p className="mt-0.5">{symptomError}</p>
                 </div>
               )}
@@ -374,7 +374,7 @@ export default function BookAppointmentPage() {
                   disabled={!booking.symptoms?.trim() || analyzing}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs sm:text-sm font-semibold h-11 px-6 shadow-xs"
                 >
-                  {analyzing ? "Menganalisis Gejala Klinis..." : "Analisis Triase AI & Lanjut →"}
+                  {analyzing ? "Analyzing Clinical Symptoms..." : "Analyze AI Triage & Continue →"}
                 </Button>
               </div>
             </div>
@@ -394,7 +394,7 @@ export default function BookAppointmentPage() {
                     <span
                       className={`inline-block text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded ${priorityCfg.badgeBg} ${priorityCfg.badgeText}`}
                     >
-                      Tingkat: {EMERGENCY_LEVEL_LABELS[level]}
+                      Priority Level: {EMERGENCY_LEVEL_LABELS[level]}
                     </span>
                     <h3 className="text-base sm:text-lg font-bold text-slate-900 mt-1">
                       {booking.aiAnalysis.possibleCondition}
@@ -402,7 +402,7 @@ export default function BookAppointmentPage() {
                   </div>
                   <div className="sm:text-right flex-shrink-0 bg-white p-2.5 rounded-lg border border-slate-200">
                     <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
-                      Perkiraan Biaya
+                      Estimated Cost
                     </p>
                     <p className="font-extrabold text-base text-slate-900 font-mono">
                       {booking.aiAnalysis.estimatedCostLabel}
@@ -415,7 +415,7 @@ export default function BookAppointmentPage() {
                 </p>
 
                 <div className="p-3 bg-white rounded-lg border border-slate-200 text-xs">
-                  <span className="text-emerald-700 font-bold block mb-0.5">Saran Medis:</span>
+                  <span className="text-emerald-700 font-bold block mb-0.5">Medical Advice:</span>
                   <p className="text-slate-800">{booking.aiAnalysis.recommendation}</p>
                 </div>
               </div>
@@ -424,10 +424,10 @@ export default function BookAppointmentPage() {
             {/* Doctors selection header */}
             <div className="flex items-center justify-between">
               <h3 className="text-base sm:text-lg font-bold text-slate-900">
-                Pilih Dokter Pemeriksa
+                Select Attending Doctor
               </h3>
               <span className="text-xs text-slate-500 font-medium">
-                {filteredDoctors.length} dokter siap melayani
+                {filteredDoctors.length} doctors available
               </span>
             </div>
 
@@ -472,7 +472,7 @@ export default function BookAppointmentPage() {
                           {doctor.specialization}
                         </span>
                         <p className="text-xs text-slate-500 mt-1">
-                          {doctor.years_experience} Tahun Pengalaman
+                          {doctor.years_experience} Years Experience
                         </p>
                       </div>
 
@@ -484,7 +484,7 @@ export default function BookAppointmentPage() {
                               : "bg-slate-100 text-slate-600"
                           }`}
                         >
-                          {isSelected ? "Terpilih ✓" : "Pilih"}
+                          {isSelected ? "Selected ✓" : "Select"}
                         </span>
                       </div>
                     </div>
@@ -494,15 +494,15 @@ export default function BookAppointmentPage() {
                       <div className="p-5 border-t border-slate-100 bg-white space-y-4">
                         <div className="p-3 bg-slate-50 rounded-lg text-xs">
                           <span className="font-semibold text-slate-500 uppercase tracking-wider block mb-1">
-                            Jadwal Praktik Dokter:
+                            Doctor Practice Schedule:
                           </span>
                           {loadingSchedules ? (
-                            <span className="text-slate-400">Memuat ketersediaan...</span>
+                            <span className="text-slate-400">Loading availability...</span>
                           ) : schedules.length > 0 ? (
                             <span className="font-bold text-slate-800">{availableDays}</span>
                           ) : (
                             <span className="text-rose-500 font-medium">
-                              Belum ada jadwal praktik aktif untuk dokter ini.
+                              No active practice schedules found for this doctor.
                             </span>
                           )}
                         </div>
@@ -510,7 +510,7 @@ export default function BookAppointmentPage() {
                         {/* Date Picker */}
                         <div className="space-y-1.5">
                           <label className="text-xs font-semibold text-slate-700">
-                            Pilih Tanggal Kunjungan:
+                            Select Appointment Date:
                           </label>
                           <Input
                             type="date"
@@ -533,12 +533,12 @@ export default function BookAppointmentPage() {
                         {booking.date && (
                           <div className="space-y-2 pt-2">
                             <label className="text-xs font-semibold text-slate-700">
-                              Pilih Jam / Slot Waktu:
+                              Select Time Slot:
                             </label>
 
                             {availableSlots.length === 0 ? (
                               <p className="p-4 bg-rose-50 text-rose-600 text-xs rounded-lg font-medium text-center">
-                                Tidak ada slot jam praktik yang tersedia di tanggal ini. Silakan pilih hari lain.
+                                No available appointment slots on this date. Please choose another date.
                               </p>
                             ) : (
                               <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 pt-1">
@@ -570,7 +570,7 @@ export default function BookAppointmentPage() {
                             disabled={!booking.date || !booking.time}
                             className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold h-10 px-5 shadow-xs"
                           >
-                            Lanjut ke Konfirmasi →
+                            Proceed to Confirmation →
                           </Button>
                         </div>
                       </div>
@@ -586,7 +586,7 @@ export default function BookAppointmentPage() {
               onClick={() => setStep(1)}
               className="rounded-lg text-xs border-slate-200"
             >
-              ← Ubah Gejala
+              ← Change Symptoms
             </Button>
           </div>
         )}
@@ -596,7 +596,7 @@ export default function BookAppointmentPage() {
           <div className="space-y-6">
             <div className="bg-white rounded-xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
               <h3 className="text-base sm:text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">
-                Rangkuman Janji Temu Pasien
+                Appointment Booking Summary
               </h3>
 
               {booking.aiAnalysis && (
@@ -618,7 +618,7 @@ export default function BookAppointmentPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Dokter Pemeriksa
+                    Attending Doctor
                   </span>
                   <p className="font-bold text-slate-900 text-sm">
                     Dr. {booking.doctor?.user?.full_name}
@@ -628,13 +628,13 @@ export default function BookAppointmentPage() {
 
                 <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Waktu Konsultasi
+                    Consultation Time
                   </span>
                   <p className="font-bold text-slate-900 text-sm">
                     {booking.date ? formatDate(booking.date) : "-"}
                   </p>
                   <p className="text-emerald-700 font-mono font-bold mt-0.5">
-                    Pukul {booking.time ? formatTime(booking.time) : "-"} WIB
+                    {booking.time ? formatTime(booking.time) : "-"}
                   </p>
                 </div>
               </div>
@@ -642,7 +642,7 @@ export default function BookAppointmentPage() {
               {booking.symptoms && (
                 <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Keluhan Pasien:
+                    Reported Symptoms:
                   </span>
                   <p className="text-xs text-slate-700 leading-relaxed italic">
                     &ldquo;{booking.symptoms}&rdquo;
@@ -662,7 +662,7 @@ export default function BookAppointmentPage() {
                   onClick={() => setStep(2)}
                   className="rounded-lg text-xs w-full sm:w-auto"
                 >
-                  ← Ubah Jadwal
+                  ← Change Schedule
                 </Button>
 
                 <Button
@@ -670,7 +670,7 @@ export default function BookAppointmentPage() {
                   disabled={submitting}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs sm:text-sm font-semibold h-11 px-8 w-full sm:w-auto shadow-xs"
                 >
-                  {submitting ? "Memproses Pemesanan..." : "Konfirmasi Janji Temu"}
+                  {submitting ? "Processing Booking..." : "Confirm Appointment"}
                 </Button>
               </div>
             </div>

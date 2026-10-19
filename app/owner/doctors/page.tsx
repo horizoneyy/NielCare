@@ -15,13 +15,13 @@ import { getInitials } from "@/lib/utils/formatters";
 import type { Doctor } from "@/types";
 
 const SPECIALIZATIONS = [
-  { id: "General Dentist", label: "General Dentist (Dokter Gigi Umum)", title: "" },
-  { id: "Orthodontist", label: "Orthodontist (Spesialis Ortodonti)", title: "Sp.Ort" },
-  { id: "Periodontist", label: "Periodontist (Spesialis Periodonsia)", title: "Sp.Perio" },
-  { id: "Endodontist", label: "Endodontist (Spesialis Konservasi Gigi)", title: "Sp.KG" },
-  { id: "Prosthodontist", label: "Prosthodontist (Spesialis Prostodonsia)", title: "Sp.Pros" },
-  { id: "Oral Surgeon", label: "Oral Surgeon (Spesialis Bedah Mulut)", title: "Sp.BM" },
-  { id: "Pediatric Dentist", label: "Pediatric Dentist (Spesialis Gigi Anak)", title: "Sp.KGA" },
+  { id: "General Dentist", label: "General Dentist (General Dental Practitioner)", title: "" },
+  { id: "Orthodontist", label: "Orthodontist (Orthodontics Specialist)", title: "Sp.Ort" },
+  { id: "Periodontist", label: "Periodontist (Periodontics Specialist)", title: "Sp.Perio" },
+  { id: "Endodontist", label: "Endodontist (Endodontics & Restorative Specialist)", title: "Sp.KG" },
+  { id: "Prosthodontist", label: "Prosthodontist (Prosthodontics Specialist)", title: "Sp.Pros" },
+  { id: "Oral Surgeon", label: "Oral Surgeon (Oral & Maxillofacial Surgery)", title: "Sp.BM" },
+  { id: "Pediatric Dentist", label: "Pediatric Dentist (Pedodontics Specialist)", title: "Sp.KGA" },
 ];
 
 export default function OwnerDoctorsPage() {
@@ -71,7 +71,7 @@ export default function OwnerDoctorsPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Gagal membuat dokter");
+        setError(data.error || "Failed to create doctor account");
         setSaving(false);
         return;
       }
@@ -93,7 +93,7 @@ export default function OwnerDoctorsPage() {
         setDoctors(updated);
       }
     } catch {
-      setError("Gagal menghubungi server untuk membuat akun dokter.");
+      setError("Failed to connect to the server to create doctor account.");
     } finally {
       setSaving(false);
     }
@@ -124,22 +124,22 @@ export default function OwnerDoctorsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-              Manajemen Tim Medis &amp; Dokter
+              Medical Team &amp; Doctor Management
             </h1>
           </div>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs h-10 px-4">
-                Tambah Dokter Baru
+                Add New Doctor
               </Button>
             </DialogTrigger>
 
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto rounded-xl p-6">
               <DialogHeader>
-                <DialogTitle className="text-lg font-bold text-slate-900">Pendaftaran Akun Dokter</DialogTitle>
+                <DialogTitle className="text-lg font-bold text-slate-900">Doctor Account Registration</DialogTitle>
                 <DialogDescription className="text-xs text-slate-500">
-                  Dokter baru akan langsung memiliki akun aktif untuk mengakses antrean dan rekam medis pasien.
+                  The new doctor will immediately have an active account to manage appointments and patient medical records.
                 </DialogDescription>
               </DialogHeader>
 
@@ -152,10 +152,10 @@ export default function OwnerDoctorsPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs font-semibold text-slate-700">Nama Lengkap *</Label>
+                    <Label className="text-xs font-semibold text-slate-700">Full Name *</Label>
                     <Input
                       autoComplete="off"
-                      placeholder="drg. Budi Santoso"
+                      placeholder="Dr. John Doe"
                       value={form.full_name}
                       onChange={(e) => setForm((p) => ({ ...p, full_name: e.target.value }))}
                       className="rounded-lg border-slate-200 text-xs h-9"
@@ -165,7 +165,7 @@ export default function OwnerDoctorsPage() {
                     <Label className="text-xs font-semibold text-slate-700">Username *</Label>
                     <Input
                       autoComplete="off"
-                      placeholder="dr.budi"
+                      placeholder="dr.john"
                       value={form.username}
                       onChange={(e) => setForm((p) => ({ ...p, username: e.target.value }))}
                       className="rounded-lg border-slate-200 text-xs h-9"
@@ -174,11 +174,11 @@ export default function OwnerDoctorsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs font-semibold text-slate-700">Email Login *</Label>
+                  <Label className="text-xs font-semibold text-slate-700">Email Address *</Label>
                   <Input
                     autoComplete="off"
                     type="email"
-                    placeholder="dr.budi@nielcare.test"
+                    placeholder="dr.john@nielcare.test"
                     value={form.email}
                     onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
                     className="rounded-lg border-slate-200 text-xs h-9"
@@ -186,7 +186,7 @@ export default function OwnerDoctorsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs font-semibold text-slate-700">Nomor WhatsApp / HP</Label>
+                  <Label className="text-xs font-semibold text-slate-700">Phone / WhatsApp</Label>
                   <Input
                     autoComplete="off"
                     placeholder="08123456789"
@@ -197,13 +197,13 @@ export default function OwnerDoctorsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs font-semibold text-slate-700">Spesialisasi Gigi *</Label>
+                  <Label className="text-xs font-semibold text-slate-700">Dental Specialization *</Label>
                   <Select
                     value={form.specialization}
                     onValueChange={(v) => setForm((p) => ({ ...p, specialization: v }))}
                   >
                     <SelectTrigger className="w-full rounded-lg border-slate-200 text-xs h-9">
-                      <SelectValue placeholder="Pilih Spesialisasi" />
+                      <SelectValue placeholder="Select Specialization" />
                     </SelectTrigger>
                     <SelectContent className="rounded-lg">
                       {SPECIALIZATIONS.map((spec) => (
@@ -216,9 +216,9 @@ export default function OwnerDoctorsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs font-semibold text-slate-700">Bio &amp; Keahlian Klinis</Label>
+                  <Label className="text-xs font-semibold text-slate-700">Bio &amp; Clinical Expertise</Label>
                   <Textarea
-                    placeholder="Fokus penanganan penambalan estetika, scaling, kawat gigi..."
+                    placeholder="Focus on aesthetic restorations, teeth scaling, orthodontic braces..."
                     value={form.bio}
                     onChange={(e) => setForm((p) => ({ ...p, bio: e.target.value }))}
                     rows={2}
@@ -228,7 +228,7 @@ export default function OwnerDoctorsPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs font-semibold text-slate-700">Pengalaman (Thn)</Label>
+                    <Label className="text-xs font-semibold text-slate-700">Experience (Yrs)</Label>
                     <Input
                       type="number"
                       min="0"
@@ -241,7 +241,7 @@ export default function OwnerDoctorsPage() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs font-semibold text-slate-700">Kata Sandi *</Label>
+                    <Label className="text-xs font-semibold text-slate-700">Password *</Label>
                     <div className="relative">
                       <Input
                         type={showPassword ? "text" : "password"}
@@ -256,7 +256,7 @@ export default function OwnerDoctorsPage() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 hover:text-slate-800"
                       >
-                        {showPassword ? "Tutup" : "Lihat"}
+                        {showPassword ? "Hide" : "Show"}
                       </button>
                     </div>
                   </div>
@@ -274,7 +274,7 @@ export default function OwnerDoctorsPage() {
                   }
                   className="w-full mt-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs h-10"
                 >
-                  {saving ? "Mendaftarkan Dokter..." : "Buat Akun Dokter"}
+                  {saving ? "Registering Doctor..." : "Create Doctor Account"}
                 </Button>
               </div>
             </DialogContent>
@@ -313,19 +313,19 @@ export default function OwnerDoctorsPage() {
                     </div>
 
                     <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                      Aktif Praktik
+                      Active Practice
                     </span>
                   </div>
 
                   <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4">
-                    {d.bio || "Dokter spesialis berkompeten di NielCare Dental Clinic."}
+                    {d.bio || "Certified dental specialist at NielCare Dental Clinic."}
                   </p>
                 </div>
 
                 <div className="pt-3.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
                   <div className="flex items-center gap-3">
                     <span className="font-medium text-slate-700">
-                      {d.years_experience} Tahun Pengalaman
+                      {d.years_experience} Years Experience
                     </span>
                     <span className="text-slate-400">
                       {d.user?.email}

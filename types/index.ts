@@ -11,9 +11,9 @@ export type NotificationType = 'booking' | 'approval' | 'rejection' | 'system';
 
 // Human-readable label map for emergency levels
 export const EMERGENCY_LEVEL_LABELS: Record<EmergencyLevel, string> = {
-  critical: 'Prioritas',
-  moderate: 'Sedang',
-  routine: 'Ringan',
+  critical: 'Priority / Urgent',
+  moderate: 'Moderate',
+  routine: 'Routine',
 };
 
 export interface User {

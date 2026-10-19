@@ -90,7 +90,7 @@ export default function OwnerDashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-              Pusat Manajemen Klinik NielCare
+              NielCare Clinic Management Center
             </h1>
           </div>
 
@@ -110,7 +110,7 @@ export default function OwnerDashboard() {
                 size="sm"
                 className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-xs h-10 px-4"
               >
-                Kelola Dokter
+                Manage Doctors
               </Button>
             </Link>
 
@@ -119,7 +119,7 @@ export default function OwnerDashboard() {
                 size="sm"
                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs h-10 px-4"
               >
-                Laporan Keuangan
+                Financial Reports
               </Button>
             </Link>
           </div>
@@ -128,59 +128,59 @@ export default function OwnerDashboard() {
         {/* 4 STAT CARDS (No icons, solid colors, no black) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">Total Pendapatan</span>
+            <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">Total Revenue</span>
             <div className="mt-2">
               <h3 className="text-2xl font-extrabold text-emerald-700 tracking-tight font-mono">
                 {formatCurrency(stats.totalRevenue)}
               </h3>
             </div>
             <p className="text-xs text-slate-400 mt-2 pt-2 border-t border-slate-100">
-              Tindakan terverifikasi EMR
+              EMR-verified treatments
             </p>
           </div>
 
           <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">Pasien Terdaftar</span>
+            <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">Registered Patients</span>
             <div className="flex items-baseline justify-between gap-2 mt-2">
               <h3 className="text-2xl font-extrabold text-blue-700 tracking-tight font-mono">
                 {stats.totalPatients}
               </h3>
               <span className="text-xs text-blue-700 font-semibold bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                Pasien Unik
+                Unique Patients
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-2 pt-2 border-t border-slate-100">
-              Rekam medis tersinkronisasi
+              Synchronized medical records
             </p>
           </div>
 
           <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">Janji Temu</span>
+            <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">Appointments</span>
             <div className="flex items-baseline justify-between gap-2 mt-2">
               <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight font-mono">
                 {stats.totalAppointments}
               </h3>
               <span className="text-xs text-indigo-700 font-semibold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
-                Total Sesi
+                Total Sessions
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-2 pt-2 border-t border-slate-100">
-              Reservasi booking klinik
+              Clinic booking reservations
             </p>
           </div>
 
           <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
-            <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">Tim Dokter Praktik</span>
+            <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">Attending Doctors Team</span>
             <div className="flex items-baseline justify-between gap-2 mt-2">
               <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight font-mono">
                 {stats.totalDoctors}
               </h3>
               <span className="text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                Spesialis Aktif
+                Active Specialists
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-2 pt-2 border-t border-slate-100">
-              Dokter gigi berlisensi
+              Licensed dental practitioners
             </p>
           </div>
         </div>
@@ -191,7 +191,7 @@ export default function OwnerDashboard() {
           <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
             <div className="pb-4 border-b border-slate-100 mb-5">
               <h3 className="text-base font-bold text-slate-900">
-                Pendapatan Bulanan (6 Bulan Terakhir)
+                Monthly Revenue (Last 6 Months)
               </h3>
             </div>
 
@@ -222,7 +222,7 @@ export default function OwnerDashboard() {
           <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
             <div className="pb-4 border-b border-slate-100 mb-5">
               <h3 className="text-base font-bold text-slate-900">
-                Volume Janji Temu Pasien (6 Bulan Terakhir)
+                Patient Appointments Volume (Last 6 Months)
               </h3>
             </div>
 
@@ -234,7 +234,7 @@ export default function OwnerDashboard() {
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-semibold text-slate-700">{m.month}</span>
                       <span className="font-bold text-blue-700 font-mono">
-                        {m.appointments} Janji Temu
+                        {m.appointments} Appointments
                       </span>
                     </div>
                     <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
@@ -256,10 +256,10 @@ export default function OwnerDashboard() {
           <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
               <h3 className="text-base font-bold text-slate-900">
-                Distribusi Triase AI Gejala Pasien
+                Patient AI Symptom Triage Distribution
               </h3>
               <span className="text-xs text-slate-600 bg-slate-100 px-2.5 py-1 rounded font-medium">
-                Total {totalPriorities} Kasus
+                Total {totalPriorities} Cases
               </span>
             </div>
 
@@ -268,17 +268,17 @@ export default function OwnerDashboard() {
               <div
                 className="bg-rose-500 rounded-full"
                 style={{ width: totalPriorities > 0 ? `${(priorityBreakdown.critical / totalPriorities) * 100}%` : "33%" }}
-                title={`Kritis: ${priorityBreakdown.critical}`}
+                title={`Priority: ${priorityBreakdown.critical}`}
               />
               <div
                 className="bg-amber-400 rounded-full"
                 style={{ width: totalPriorities > 0 ? `${(priorityBreakdown.moderate / totalPriorities) * 100}%` : "33%" }}
-                title={`Sedang: ${priorityBreakdown.moderate}`}
+                title={`Moderate: ${priorityBreakdown.moderate}`}
               />
               <div
                 className="bg-emerald-500 rounded-full"
                 style={{ width: totalPriorities > 0 ? `${(priorityBreakdown.routine / totalPriorities) * 100}%` : "34%" }}
-                title={`Rutin: ${priorityBreakdown.routine}`}
+                title={`Routine: ${priorityBreakdown.routine}`}
               />
             </div>
 
@@ -286,37 +286,37 @@ export default function OwnerDashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="p-3.5 rounded-lg border border-rose-200 bg-rose-50">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-bold text-rose-700">Kritis (Darurat)</span>
+                  <span className="text-xs font-bold text-rose-700">Priority / Urgent</span>
                   <span className="text-sm font-extrabold text-rose-700 font-mono">
                     {priorityBreakdown.critical}
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Infeksi akut, abses nanah, nyeri hebat
+                  Acute infection, dental abscess, severe pain
                 </p>
               </div>
 
               <div className="p-3.5 rounded-lg border border-amber-200 bg-amber-50">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-bold text-amber-700">Sedang (Moderate)</span>
+                  <span className="text-xs font-bold text-amber-700">Moderate</span>
                   <span className="text-sm font-extrabold text-amber-700 font-mono">
                     {priorityBreakdown.moderate}
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Gusi berdarah, gigi berlubang sedang
+                  Bleeding gums, moderate cavity breakdown
                 </p>
               </div>
 
               <div className="p-3.5 rounded-lg border border-emerald-200 bg-emerald-50">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-bold text-emerald-700">Rutin (Ringan)</span>
+                  <span className="text-xs font-bold text-emerald-700">Routine</span>
                   <span className="text-sm font-extrabold text-emerald-700 font-mono">
                     {priorityBreakdown.routine}
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Scaling karang gigi, kontrol rutin
+                  Teeth scaling, routine checkup
                 </p>
               </div>
             </div>
@@ -327,26 +327,26 @@ export default function OwnerDashboard() {
             <div>
               <div className="pb-3 border-b border-indigo-200/60 mb-3">
                 <span className="text-xs font-bold tracking-widest text-indigo-800 uppercase">
-                  Ringkasan Eksekutif
+                  Executive Summary
                 </span>
               </div>
 
               <p className="text-xs text-indigo-900 leading-relaxed mb-5">
-                Klinik NielCare beroperasi dengan sistem reservasi pintar berbasis AI yang memetakan keluhan pasien secara otomatis ke dokter spesialis yang tepat.
+                NielCare Dental operates with an intelligent AI-assisted reservation system that routes patient symptoms directly to the appropriate dental specialist.
               </p>
 
               <div className="space-y-3 pt-2 border-t border-indigo-200/60">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-indigo-700">Total Pasien Terlayani</span>
-                  <span className="font-bold text-indigo-950 font-mono">{stats.totalPatients} Jiwa</span>
+                  <span className="text-indigo-700">Total Patients Treated</span>
+                  <span className="font-bold text-indigo-950 font-mono">{stats.totalPatients} Patients</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-indigo-700">Total Penerimaan EMR</span>
+                  <span className="text-indigo-700">Total EMR Revenue</span>
                   <span className="font-bold text-emerald-700 font-mono">{formatCurrency(stats.totalRevenue)}</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-indigo-700">Dokter Praktik Aktif</span>
-                  <span className="font-bold text-indigo-950 font-mono">{stats.totalDoctors} Dokter</span>
+                  <span className="text-indigo-700">Active Practice Doctors</span>
+                  <span className="font-bold text-indigo-950 font-mono">{stats.totalDoctors} Doctors</span>
                 </div>
               </div>
             </div>
@@ -356,7 +356,7 @@ export default function OwnerDashboard() {
                 href="/owner/reports"
                 className="text-xs font-bold text-indigo-700 hover:underline block text-center"
               >
-                Lihat Laporan Kinerja Lengkap →
+                View Full Performance Reports →
               </Link>
             </div>
           </div>

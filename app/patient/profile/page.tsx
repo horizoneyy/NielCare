@@ -58,7 +58,7 @@ export default function PatientProfilePage() {
   }
 
   const birthDateFormatted = user?.date_of_birth
-    ? new Date(user.date_of_birth).toLocaleDateString("id-ID", {
+    ? new Date(user.date_of_birth).toLocaleDateString("en-US", {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -70,16 +70,16 @@ export default function PatientProfilePage() {
       <Sidebar />
 
       <main className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header (Clean title, no subtitle, no icons) */}
+        {/* Header */}
         <div className="pb-6 border-b border-slate-200 mb-8">
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-            Profil Identitas Pasien
+            Patient Profile
           </h1>
         </div>
 
         {/* Profile Card */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-          {/* Header Banner (Solid light color, no gradient, no icon) */}
+          {/* Header Banner */}
           <div className="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16 border border-slate-200 shadow-xs">
@@ -91,7 +91,7 @@ export default function PatientProfilePage() {
                 <h2 className="text-lg font-bold text-slate-900">{user?.full_name}</h2>
                 <div className="mt-1">
                   <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
-                    Pasien Terverifikasi
+                    Verified Patient
                   </span>
                 </div>
               </div>
@@ -103,38 +103,38 @@ export default function PatientProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
                 <span className="text-xs font-bold tracking-wider text-slate-400 uppercase block mb-1">
-                  Nama Lengkap
+                  Full Name
                 </span>
                 <p className="text-base font-bold text-slate-900">{user?.full_name || "-"}</p>
               </div>
 
               <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
                 <span className="text-xs font-bold tracking-wider text-slate-400 uppercase block mb-1">
-                  Nomor WhatsApp / HP
+                  WhatsApp / Phone Number
                 </span>
                 <p className="text-base font-semibold text-slate-800 font-mono">{user?.phone || "-"}</p>
               </div>
 
               <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
                 <span className="text-xs font-bold tracking-wider text-slate-400 uppercase block mb-1">
-                  Jenis Kelamin
+                  Gender
                 </span>
                 <p className="text-base font-semibold text-slate-800 capitalize">
-                  {user?.gender === "male" ? "Laki-laki" : user?.gender === "female" ? "Perempuan" : "-"}
+                  {user?.gender === "male" ? "Male" : user?.gender === "female" ? "Female" : "-"}
                 </p>
               </div>
 
               <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
                 <span className="text-xs font-bold tracking-wider text-slate-400 uppercase block mb-1">
-                  Tanggal Lahir
+                  Date of Birth
                 </span>
                 <p className="text-base font-semibold text-slate-800">{birthDateFormatted}</p>
               </div>
             </div>
 
             <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-              <span>Informasi identitas tersimpan di sistem.</span>
-              <span className="text-emerald-700 font-semibold">Klinik Gigi NielCare</span>
+              <span>Identity information stored in clinic records.</span>
+              <span className="text-emerald-700 font-semibold">NielCare Dental Clinic</span>
             </div>
           </div>
         </div>

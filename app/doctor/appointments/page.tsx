@@ -88,7 +88,7 @@ export default function DoctorAppointmentsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-              Janji Temu &amp; Rekam Pasien
+              Appointments &amp; Patient Records
             </h1>
           </div>
 
@@ -99,7 +99,7 @@ export default function DoctorAppointmentsPage() {
                 size="sm"
                 className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-xs h-10 px-4"
               >
-                Jadwal Praktik Saya
+                My Practice Schedule
               </Button>
             </Link>
           </div>
@@ -109,32 +109,32 @@ export default function DoctorAppointmentsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-xs">
             <span className="text-xs font-bold tracking-wider text-amber-700 uppercase">
-              Menunggu Konfirmasi
+              Pending Approval
             </span>
             <p className="text-2xl font-extrabold text-slate-900 font-mono mt-1">
               {pending.length}
             </p>
-            <p className="text-xs text-slate-400 mt-0.5">Permintaan baru</p>
+            <p className="text-xs text-slate-400 mt-0.5">New requests</p>
           </div>
 
           <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-xs">
             <span className="text-xs font-bold tracking-wider text-blue-700 uppercase">
-              Telah Disetujui
+              Approved
             </span>
             <p className="text-2xl font-extrabold text-slate-900 font-mono mt-1">
               {approved.length}
             </p>
-            <p className="text-xs text-slate-400 mt-0.5">Siap diperiksa</p>
+            <p className="text-xs text-slate-400 mt-0.5">Ready for visit</p>
           </div>
 
           <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-xs">
             <span className="text-xs font-bold tracking-wider text-emerald-700 uppercase">
-              Riwayat Selesai
+              Completed History
             </span>
             <p className="text-2xl font-extrabold text-slate-900 font-mono mt-1">
               {history.length}
             </p>
-            <p className="text-xs text-slate-400 mt-0.5">Total konsultasi</p>
+            <p className="text-xs text-slate-400 mt-0.5">Total consultations</p>
           </div>
         </div>
 
@@ -143,7 +143,7 @@ export default function DoctorAppointmentsPage() {
           <div className="relative">
             <Input
               type="text"
-              placeholder="Cari berdasarkan nama pasien atau keluhan..."
+              placeholder="Search by patient name or symptom..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-10 rounded-lg bg-white border-slate-200 text-xs sm:text-sm focus:border-blue-500 shadow-xs px-3.5"
@@ -166,28 +166,28 @@ export default function DoctorAppointmentsPage() {
               value="pending"
               className="rounded-md text-xs font-semibold px-4 py-2 data-[state=active]:bg-white data-[state=active]:text-slate-900 transition-all"
             >
-              Menunggu Persetujuan ({pending.length})
+              Pending Approval ({pending.length})
             </TabsTrigger>
             <TabsTrigger
               value="approved"
               className="rounded-md text-xs font-semibold px-4 py-2 data-[state=active]:bg-white data-[state=active]:text-slate-900 transition-all"
             >
-              Disetujui ({approved.length})
+              Approved ({approved.length})
             </TabsTrigger>
             <TabsTrigger
               value="history"
               className="rounded-md text-xs font-semibold px-4 py-2 data-[state=active]:bg-white data-[state=active]:text-slate-900 transition-all"
             >
-              Riwayat Selesai ({history.length})
+              Completed ({history.length})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
             {pending.length === 0 ? (
               <div className="text-center py-16 px-4 bg-white border border-dashed border-slate-200 rounded-xl">
-                <h4 className="text-sm font-bold text-slate-800">Tidak Ada Janji Menunggu</h4>
+                <h4 className="text-sm font-bold text-slate-800">No Pending Appointments</h4>
                 <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                  Semua permohonan janji temu pasien telah ditinjau atau belum ada reservasi baru.
+                  All patient appointment requests have been reviewed or there are no new bookings.
                 </p>
               </div>
             ) : (
@@ -208,9 +208,9 @@ export default function DoctorAppointmentsPage() {
           <TabsContent value="approved">
             {approved.length === 0 ? (
               <div className="text-center py-16 px-4 bg-white border border-dashed border-slate-200 rounded-xl">
-                <h4 className="text-sm font-bold text-slate-800">Tidak Ada Janji Disetujui</h4>
+                <h4 className="text-sm font-bold text-slate-800">No Approved Appointments</h4>
                 <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                  Belum ada jadwal yang siap diperiksa saat ini. Silakan konfirmasi janji dari tab Menunggu.
+                  No scheduled appointments ready at this time. Please approve appointments from the Pending tab.
                 </p>
               </div>
             ) : (
@@ -231,9 +231,9 @@ export default function DoctorAppointmentsPage() {
           <TabsContent value="history">
             {history.length === 0 ? (
               <div className="text-center py-16 px-4 bg-white border border-dashed border-slate-200 rounded-xl">
-                <h4 className="text-sm font-bold text-slate-800">Belum Ada Riwayat Kunjungan</h4>
+                <h4 className="text-sm font-bold text-slate-800">No Visit History</h4>
                 <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                  Janji temu yang telah selesai dirawat atau dibatalkan akan tercatat di sini.
+                  Appointments that have been completed or cancelled will be logged here.
                 </p>
               </div>
             ) : (

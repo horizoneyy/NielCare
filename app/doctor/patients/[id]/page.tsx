@@ -75,7 +75,7 @@ export default function DoctorPatientDetailPage() {
         <div className="flex items-center justify-between pb-6 border-b border-slate-200 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-              Profil Pasien &amp; Rekam Medis
+              Patient Profile &amp; Medical History
             </h1>
           </div>
 
@@ -85,7 +85,7 @@ export default function DoctorPatientDetailPage() {
               size="sm"
               className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-medium rounded-lg text-xs h-10 px-4"
             >
-              Kembali ke Daftar
+              Back to Directory
             </Button>
           </Link>
         </div>
@@ -104,21 +104,21 @@ export default function DoctorPatientDetailPage() {
                   <div className="flex items-center gap-2">
                     <h2 className="text-xl font-extrabold text-slate-900">{patient.full_name}</h2>
                     <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                      Terdaftar
+                      Registered
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 capitalize mt-0.5">
-                    Jenis Kelamin: <span className="font-semibold text-slate-700">{patient.gender || "Belum diisi"}</span>
+                    Gender: <span className="font-semibold text-slate-700">{patient.gender || "Not specified"}</span>
                   </p>
                 </div>
               </div>
 
               <div className="px-3.5 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-center">
                 <span className="text-[10px] uppercase font-bold text-blue-700 tracking-wider">
-                  Total Kunjungan
+                  Total Visits
                 </span>
                 <p className="text-lg font-extrabold text-blue-900 font-mono">
-                  {appointments.length} Kali
+                  {appointments.length} Visits
                 </p>
               </div>
             </div>
@@ -131,19 +131,19 @@ export default function DoctorPatientDetailPage() {
               </div>
 
               <div className="p-3 rounded-lg bg-slate-50 border border-slate-100 text-xs">
-                <p className="text-slate-400 font-medium">No. Telepon</p>
+                <p className="text-slate-400 font-medium">Phone Number</p>
                 <p className="font-semibold text-slate-800 truncate mt-0.5">{patient.phone || "-"}</p>
               </div>
 
               <div className="p-3 rounded-lg bg-slate-50 border border-slate-100 text-xs">
-                <p className="text-slate-400 font-medium">Tanggal Lahir</p>
+                <p className="text-slate-400 font-medium">Date of Birth</p>
                 <p className="font-semibold text-slate-800 truncate mt-0.5">
                   {patient.date_of_birth ? formatDate(patient.date_of_birth) : "-"}
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-slate-50 border border-slate-100 text-xs">
-                <p className="text-slate-400 font-medium">Fisik (BB / TB)</p>
+                <p className="text-slate-400 font-medium">Vitals (Weight / Height)</p>
                 <p className="font-semibold text-slate-800 truncate mt-0.5">
                   {patient.weight_kg ? `${patient.weight_kg} kg` : "-"} /{" "}
                   {patient.height_cm ? `${patient.height_cm} cm` : "-"}
@@ -156,14 +156,14 @@ export default function DoctorPatientDetailPage() {
         {/* History of Appointments */}
         <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
           <div className="pb-4 border-b border-slate-100 mb-5">
-            <h3 className="text-base font-bold text-slate-900">Histori Janji Temu Pasien Ini</h3>
+            <h3 className="text-base font-bold text-slate-900">Appointment History</h3>
           </div>
 
           {appointments.length === 0 ? (
             <div className="text-center py-16 px-4 bg-slate-50 border border-dashed border-slate-200 rounded-lg">
-              <h4 className="text-sm font-bold text-slate-800">Belum Ada Riwayat Janji Temu</h4>
+              <h4 className="text-sm font-bold text-slate-800">No Appointment History</h4>
               <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                Pasien ini belum memiliki riwayat kunjungan yang selesai atau terdaftar pada jadwal Anda.
+                This patient does not have any appointment history with you yet.
               </p>
             </div>
           ) : (

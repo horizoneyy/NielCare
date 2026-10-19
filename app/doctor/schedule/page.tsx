@@ -67,7 +67,7 @@ export default function DoctorSchedulePage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-              Jadwal Praktik Harian
+              Daily Practice Schedule
             </h1>
           </div>
 
@@ -77,7 +77,7 @@ export default function DoctorSchedulePage() {
               size="sm"
               className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-xs h-10 px-4"
             >
-              Atur Jam Ketersediaan
+              Set Availability Hours
             </Button>
           </Link>
         </div>
@@ -92,7 +92,7 @@ export default function DoctorSchedulePage() {
                   size="sm"
                   onClick={() => changeDateByDays(-1)}
                   className="h-10 px-3 rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 font-bold"
-                  title="Hari Sebelumnya"
+                  title="Previous Day"
                 >
                   ←
                 </Button>
@@ -107,7 +107,7 @@ export default function DoctorSchedulePage() {
                   size="sm"
                   onClick={() => changeDateByDays(1)}
                   className="h-10 px-3 rounded-lg border-slate-200 text-slate-600 hover:bg-slate-50 font-bold"
-                  title="Hari Berikutnya"
+                  title="Next Day"
                 >
                   →
                 </Button>
@@ -123,7 +123,7 @@ export default function DoctorSchedulePage() {
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >
-                  Hari Ini
+                  Today
                 </button>
                 <button
                   onClick={() => {
@@ -133,7 +133,7 @@ export default function DoctorSchedulePage() {
                   }}
                   className="text-xs px-3 py-2 rounded-lg font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all cursor-pointer"
                 >
-                  Besok
+                  Tomorrow
                 </button>
               </div>
             </div>
@@ -142,8 +142,8 @@ export default function DoctorSchedulePage() {
             <div className="text-left md:text-right">
               <p className="text-xs font-bold text-slate-900">{formatDate(selectedDate)}</p>
               <p className="text-xs text-slate-500 mt-0.5">
-                <span className="font-semibold text-blue-700">{appointments.length} Pasien</span>{" "}
-                terjadwal ({approvedCount} disetujui, {pendingCount} menunggu)
+                <span className="font-semibold text-blue-700">{appointments.length} Patients</span>{" "}
+                scheduled ({approvedCount} approved, {pendingCount} pending)
               </p>
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function DoctorSchedulePage() {
         <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
           <div className="pb-4 border-b border-slate-100 mb-5">
             <h3 className="text-base font-bold text-slate-900">
-              Antrean Pasien — {formatDate(selectedDate)}
+              Patient Queue — {formatDate(selectedDate)}
             </h3>
           </div>
 
@@ -165,10 +165,10 @@ export default function DoctorSchedulePage() {
           ) : appointments.length === 0 ? (
             <div className="text-center py-16 px-4 bg-slate-50 border border-dashed border-slate-200 rounded-lg">
               <h4 className="text-sm font-bold text-slate-800">
-                Tidak Ada Janji Temu pada Tanggal Ini
+                No Appointments on This Date
               </h4>
               <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                Belum ada reservasi pasien untuk tanggal {formatDate(selectedDate)}.
+                No patient bookings for {formatDate(selectedDate)} yet.
               </p>
               {selectedDate !== todayStr && (
                 <Button
@@ -176,7 +176,7 @@ export default function DoctorSchedulePage() {
                   onClick={() => setSelectedDate(todayStr)}
                   className="mt-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold"
                 >
-                  Kembali ke Hari Ini
+                  Back to Today
                 </Button>
               )}
             </div>

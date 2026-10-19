@@ -61,22 +61,22 @@ export function Sidebar() {
 
   const roleLinks: Record<string, { label: string; href: string }[]> = {
     patient: [
-      { label: "Beranda", href: "/patient/dashboard" },
-      { label: "Buat Janji", href: "/patient/book" },
-      { label: "Riwayat", href: "/patient/appointments" },
-      { label: "Profil Saya", href: "/patient/profile" },
+      { label: "Dashboard", href: "/patient/dashboard" },
+      { label: "Book Appointment", href: "/patient/book" },
+      { label: "Appointments", href: "/patient/appointments" },
+      { label: "My Profile", href: "/patient/profile" },
     ],
     doctor: [
-      { label: "Beranda", href: "/doctor/dashboard" },
-      { label: "Janji Temu", href: "/doctor/appointments" },
-      { label: "Daftar Pasien", href: "/doctor/patients" },
-      { label: "Jadwal", href: "/doctor/schedule" },
-      { label: "Ketersediaan", href: "/doctor/availability" },
+      { label: "Dashboard", href: "/doctor/dashboard" },
+      { label: "Appointments", href: "/doctor/appointments" },
+      { label: "Patients", href: "/doctor/patients" },
+      { label: "Schedule", href: "/doctor/schedule" },
+      { label: "Availability", href: "/doctor/availability" },
     ],
     owner: [
-      { label: "Beranda", href: "/owner/dashboard" },
-      { label: "Daftar Dokter", href: "/owner/doctors" },
-      { label: "Laporan Klinik", href: "/owner/reports" },
+      { label: "Dashboard", href: "/owner/dashboard" },
+      { label: "Doctors", href: "/owner/doctors" },
+      { label: "Reports", href: "/owner/reports" },
     ],
   };
 
@@ -126,7 +126,7 @@ export function Sidebar() {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
         >
-          {mobileMenuOpen ? "Tutup" : "Menu"}
+          {mobileMenuOpen ? "Close" : "Menu"}
         </button>
       </div>
 
@@ -156,7 +156,7 @@ export function Sidebar() {
 
           <div className="p-4 space-y-1">
             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2.5">
-              Menu Utama
+              Main Menu
             </p>
             {links.map((link) => {
               const isActive = pathname === link.href;
@@ -192,7 +192,7 @@ export function Sidebar() {
                   {user.full_name}
                 </p>
                 <p className="text-[11px] text-slate-500 capitalize">
-                  {user.role === 'owner' ? 'Administrator' : user.role === 'patient' ? 'Pasien Klinik' : 'Dokter Praktik'}
+                  {user.role === 'owner' ? 'Clinic Administrator' : user.role === 'patient' ? 'Patient' : 'Attending Doctor'}
                 </p>
               </div>
             </div>
@@ -202,7 +202,7 @@ export function Sidebar() {
               className="w-full justify-center text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg text-xs font-semibold cursor-pointer border border-rose-100 bg-white"
               onClick={handleLogout}
             >
-              Keluar Sesi
+              Sign Out
             </Button>
           </div>
         )}

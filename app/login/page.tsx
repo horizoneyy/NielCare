@@ -9,8 +9,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const loginSchema = z.object({
-  email: z.string().email("Format email tidak valid"),
-  password: z.string().min(1, "Kata sandi wajib diisi"),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(1, "Password is required"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -42,20 +42,19 @@ function LoginFormContent() {
 
       if (authError) {
         console.error("[Login authError]", authError);
-        // Pesan generik agar peretas tidak dapat menebak keberadaan email/admin
-        setError("Email atau kata sandi tidak valid. Silakan periksa kembali.");
+        setError("Invalid email or password. Please check your credentials.");
         setLoading(false);
         return;
       }
 
       const user = authData?.user;
       if (!user) {
-        setError("Gagal memverifikasi identitas akun.");
+        setError("Failed to verify account identity.");
         setLoading(false);
         return;
       }
 
-      // Cek peran langsung dari metadata JWT sesi untuk respon instan
+      // Check role directly from JWT user metadata for instant response
       let role = user.user_metadata?.role;
 
       if (!role) {
@@ -67,7 +66,7 @@ function LoginFormContent() {
 
         if (profileError || !profile || !profile.is_active) {
           await supabase.auth.signOut();
-          setError("Akun tidak memiliki izin akses portal.");
+          setError("Account does not have portal access permission.");
           setLoading(false);
           return;
         }
@@ -83,7 +82,7 @@ function LoginFormContent() {
       }
     } catch (err: any) {
       console.error("[Login Error]", err);
-      setError("Terjadi kesalahan pada sistem. Silakan coba lagi.");
+      setError("A system error occurred. Please try again.");
       setLoading(false);
     }
   };
@@ -95,7 +94,7 @@ function LoginFormContent() {
           href="/"
           className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-700 mb-6 transition-colors"
         >
-          ← Kembali ke Beranda
+          ← Back to Home
         </Link>
 
         {/* Brand Logo */}
@@ -104,9 +103,9 @@ function LoginFormContent() {
             <span className="text-slate-900">Niel</span>
             <span className="text-emerald-600">Care</span>
           </span>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight mt-3">Masuk ke Akun Anda</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight mt-3">Sign in to Your Account</h1>
           <p className="text-xs text-slate-500 mt-1">
-            Silakan masukkan email dan kata sandi Anda untuk melanjutkan
+            Please enter your email and password to continue
           </p>
         </div>
 
@@ -118,10 +117,10 @@ function LoginFormContent() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" autoComplete="off">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-700">Email Akun</label>
+            <label className="text-xs font-semibold text-slate-700">Email Address</label>
             <input
               type="email"
-              placeholder="nama@nielcare.com"
+              placeholder="name@nielcare.com"
               autoComplete="off"
               {...register("email")}
               className="w-full px-4 py-3 rounded-xl text-sm bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition-all"
@@ -130,7 +129,7 @@ function LoginFormContent() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-700">Kata Sandi</label>
+            <label className="text-xs font-semibold text-slate-700">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -145,7 +144,7 @@ function LoginFormContent() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 hover:text-slate-600 px-1 py-0.5 cursor-pointer"
                 tabIndex={-1}
               >
-                {showPassword ? "Sembunyi" : "Lihat"}
+                {showPassword ? "Hide" : "Show"}
               </button>
             </div>
             {errors.password && <p className="text-xs text-rose-500 mt-1">{errors.password.message}</p>}
@@ -156,7 +155,7 @@ function LoginFormContent() {
             disabled={loading}
             className="w-full py-3.5 rounded-xl font-semibold text-sm text-white bg-emerald-600 hover:bg-emerald-700 active:scale-98 transition-all shadow-xs cursor-pointer disabled:opacity-50 mt-2"
           >
-            {loading ? "Memverifikasi..." : "Masuk Sistem"}
+            {loading ? "Verifying..." : "Sign In"}
           </button>
         </form>
       </div>
@@ -169,7 +168,7 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-slate-50 flex items-center justify-center text-sm font-semibold text-slate-500">
-          Memuat halaman masuk...
+          Loading sign in page...
         </div>
       }
     >

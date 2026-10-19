@@ -80,7 +80,7 @@ export default function DoctorAvailabilityPage() {
   };
 
   const deleteSchedule = async (id: string) => {
-    if (!confirm("Hapus slot hari praktik ini dari jadwal rutin Anda?")) return;
+    if (!confirm("Remove this practice slot from your recurring schedule?")) return;
     try {
       await supabase.from("doctor_schedules").delete().eq("id", id);
       setSchedules((prev) => prev.filter((s) => s.id !== id));
@@ -122,7 +122,7 @@ export default function DoctorAvailabilityPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-              Ketersediaan Jadwal Praktik
+              Practice Availability Schedule
             </h1>
           </div>
 
@@ -132,7 +132,7 @@ export default function DoctorAvailabilityPage() {
               size="sm"
               className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-xs h-10 px-4"
             >
-              Cek Kalender Jadwal
+              View Schedule Calendar
             </Button>
           </Link>
         </div>
@@ -142,12 +142,12 @@ export default function DoctorAvailabilityPage() {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
               <div className="pb-3 border-b border-slate-100 mb-4">
-                <h3 className="text-sm font-bold text-slate-900">Tambah Hari Praktik</h3>
+                <h3 className="text-sm font-bold text-slate-900">Add Practice Day</h3>
               </div>
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-slate-700">Hari Praktik</Label>
+                  <Label className="text-xs font-semibold text-slate-700">Practice Day</Label>
                   <Select
                     value={newSchedule.day_of_week}
                     onValueChange={(v) => setNewSchedule((p) => ({ ...p, day_of_week: v }))}
@@ -167,7 +167,7 @@ export default function DoctorAvailabilityPage() {
 
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold text-slate-700">
-                    Durasi Tiap Pasien (Menit)
+                    Duration per Patient (Minutes)
                   </Label>
                   <Input
                     type="number"
@@ -182,7 +182,7 @@ export default function DoctorAvailabilityPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-slate-700">Jam Mulai</Label>
+                    <Label className="text-xs font-semibold text-slate-700">Start Time</Label>
                     <Input
                       type="time"
                       value={newSchedule.start_time}
@@ -193,7 +193,7 @@ export default function DoctorAvailabilityPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-slate-700">Jam Selesai</Label>
+                    <Label className="text-xs font-semibold text-slate-700">End Time</Label>
                     <Input
                       type="time"
                       value={newSchedule.end_time}
@@ -210,7 +210,7 @@ export default function DoctorAvailabilityPage() {
                   disabled={saving}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold h-10 mt-2"
                 >
-                  {saving ? "Menyimpan..." : "Pasang Jadwal Praktik"}
+                  {saving ? "Saving..." : "Add Practice Schedule"}
                 </Button>
               </div>
             </div>
@@ -221,15 +221,15 @@ export default function DoctorAvailabilityPage() {
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
               <div className="pb-4 border-b border-slate-100 mb-5">
                 <h3 className="text-sm font-bold text-slate-900">
-                  Jadwal Praktik Aktif ({schedules.length} Slot)
+                  Active Practice Schedule ({schedules.length} Slots)
                 </h3>
               </div>
 
               {schedules.length === 0 ? (
                 <div className="text-center py-16 px-4 bg-slate-50 border border-dashed border-slate-200 rounded-lg">
-                  <h4 className="text-sm font-bold text-slate-800">Belum Ada Jadwal Didaftarkan</h4>
+                  <h4 className="text-sm font-bold text-slate-800">No Schedules Registered</h4>
                   <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                    Pasien tidak dapat melakukan reservasi jika jadwal ketersediaan Anda masih kosong.
+                    Patients cannot book appointments if your availability schedule is empty.
                   </p>
                 </div>
               ) : (
@@ -255,11 +255,11 @@ export default function DoctorAvailabilityPage() {
                                 : "bg-slate-200 text-slate-600"
                             }`}
                           >
-                            {s.is_available ? "Buka Praktik" : "Nonaktif"}
+                            {s.is_available ? "Open" : "Inactive"}
                           </span>
                         </div>
                         <p className="text-xs text-slate-600 mt-1">
-                          {s.start_time.slice(0, 5)} – {s.end_time.slice(0, 5)} WIB • {s.slot_duration_minutes} mnt / pasien
+                          {s.start_time.slice(0, 5)} – {s.end_time.slice(0, 5)} WIB • {s.slot_duration_minutes} min / patient
                         </p>
                       </div>
 
@@ -274,7 +274,7 @@ export default function DoctorAvailabilityPage() {
                               : "border-emerald-200 text-emerald-700 hover:bg-emerald-50"
                           }`}
                         >
-                          {s.is_available ? "Nonaktifkan" : "Aktifkan"}
+                          {s.is_available ? "Deactivate" : "Activate"}
                         </Button>
                         <Button
                           variant="ghost"
@@ -282,7 +282,7 @@ export default function DoctorAvailabilityPage() {
                           onClick={() => deleteSchedule(s.id)}
                           className="h-8 px-2.5 text-xs text-red-600 hover:bg-red-50 rounded-lg font-semibold"
                         >
-                          Hapus
+                          Delete
                         </Button>
                       </div>
                     </div>

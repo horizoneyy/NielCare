@@ -29,7 +29,7 @@ export function AppointmentCard({
     possibleCondition = null;
   }
 
-  const title = possibleCondition || appointment.symptom_description?.slice(0, 50) || "Pemeriksaan Gigi";
+  const title = possibleCondition || appointment.symptom_description?.slice(0, 50) || "Dental Examination";
 
   return (
     <Link href={`${linkPrefix}/${appointment.id}`} className="block group">
@@ -45,7 +45,7 @@ export function AppointmentCard({
                 {formatDate(appointment.appointment_date)}
               </span>
               <span className="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 font-mono">
-                {formatTime(appointment.slot_time)} WIB
+                {formatTime(appointment.slot_time)}
               </span>
             </div>
           </div>
@@ -79,7 +79,7 @@ export function AppointmentCard({
               </span>
             </div>
             <span className="text-blue-600 group-hover:underline text-xs font-semibold">
-              Rincian
+              View Details
             </span>
           </div>
         )}
@@ -98,7 +98,7 @@ export function AppointmentCard({
               )}
             </div>
             <span className="text-blue-600 group-hover:underline text-xs font-semibold">
-              Periksa Pasien
+              View Patient
             </span>
           </div>
         )}

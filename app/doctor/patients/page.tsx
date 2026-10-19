@@ -70,17 +70,17 @@ export default function DoctorPatientsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-              Direktori Pasien Anda
+              Your Patient Directory
             </h1>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="px-4 py-2 bg-white rounded-lg border border-slate-200 shadow-xs">
               <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                Total Pasien
+                Total Patients
               </p>
               <p className="text-base font-extrabold text-blue-700 font-mono">
-                {patients.length} Orang
+                {patients.length} Patients
               </p>
             </div>
           </div>
@@ -91,7 +91,7 @@ export default function DoctorPatientsPage() {
           <div className="relative">
             <Input
               type="text"
-              placeholder="Cari nama pasien atau alamat email..."
+              placeholder="Search by patient name or email address..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-10 rounded-lg bg-white border-slate-200 text-xs sm:text-sm focus:border-blue-500 shadow-xs px-3.5"
@@ -111,12 +111,12 @@ export default function DoctorPatientsPage() {
         {filteredPatients.length === 0 ? (
           <div className="text-center py-16 px-4 bg-white border border-dashed border-slate-200 rounded-xl">
             <h4 className="text-sm font-bold text-slate-800">
-              {searchQuery ? "Tidak Ada Pasien yang Cocok" : "Belum Ada Pasien"}
+              {searchQuery ? "No Matching Patients" : "No Patients Yet"}
             </h4>
             <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
               {searchQuery
-                ? `Tidak ditemukan pasien dengan kata kunci "${searchQuery}".`
-                : "Pasien yang pernah menjadwalkan janji temu dengan Anda akan muncul di sini."}
+                ? `No patients found matching "${searchQuery}".`
+                : "Patients who have scheduled an appointment with you will appear here."}
             </p>
           </div>
         ) : (
@@ -142,7 +142,7 @@ export default function DoctorPatientsPage() {
                     <span className="text-base font-extrabold text-blue-700 font-mono">
                       {p.appointmentCount}
                     </span>
-                    <p className="text-[10px] text-slate-400 font-medium">Kunjungan</p>
+                    <p className="text-[10px] text-slate-400 font-medium">Visits</p>
                   </div>
                 </div>
               </Link>

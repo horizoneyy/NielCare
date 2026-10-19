@@ -59,11 +59,11 @@ export default function PatientAppointmentsPage() {
       <Sidebar />
 
       <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header Section (Clean title, no subtitle, no icons) */}
+        {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-              Riwayat &amp; Jadwal Janji Temu
+              Appointment Schedule &amp; History
             </h1>
           </div>
 
@@ -72,25 +72,25 @@ export default function PatientAppointmentsPage() {
               size="sm"
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs h-9 px-4 shadow-xs"
             >
-              Buat Janji Baru
+              Book New Appointment
             </Button>
           </Link>
         </div>
 
-        {/* Tabs Filter (No icons in trigger) */}
+        {/* Tabs Filter */}
         <Tabs defaultValue="upcoming" className="w-full">
           <TabsList className="mb-6 bg-slate-200/70 p-1 rounded-lg w-full sm:w-auto">
             <TabsTrigger
               value="upcoming"
               className="rounded-md text-xs font-semibold px-4 py-2 data-[state=active]:bg-white data-[state=active]:text-slate-900 transition-all"
             >
-              Akan Datang ({upcoming.length})
+              Upcoming ({upcoming.length})
             </TabsTrigger>
             <TabsTrigger
               value="past"
               className="rounded-md text-xs font-semibold px-4 py-2 data-[state=active]:bg-white data-[state=active]:text-slate-900 transition-all"
             >
-              Riwayat Selesai ({past.length})
+              Past &amp; Completed ({past.length})
             </TabsTrigger>
           </TabsList>
 
@@ -98,17 +98,17 @@ export default function PatientAppointmentsPage() {
             {upcoming.length === 0 ? (
               <div className="text-center py-16 px-4 bg-white border border-dashed border-slate-200 rounded-xl">
                 <h4 className="text-sm font-bold text-slate-800">
-                  Tidak Ada Janji Temu Mendatang
+                  No Upcoming Appointments
                 </h4>
                 <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                  Anda tidak memiliki jadwal janji temu aktif. Klik tombol di atas untuk membuat reservasi baru.
+                  You have no active appointments scheduled. Click the button above to make a new reservation.
                 </p>
                 <Link href="/patient/book">
                   <Button
                     size="sm"
                     className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold"
                   >
-                    Buat Janji Baru
+                    Book New Appointment
                   </Button>
                 </Link>
               </div>
@@ -129,10 +129,10 @@ export default function PatientAppointmentsPage() {
             {past.length === 0 ? (
               <div className="text-center py-16 px-4 bg-white border border-dashed border-slate-200 rounded-xl">
                 <h4 className="text-sm font-bold text-slate-800">
-                  Belum Ada Riwayat Kunjungan
+                  No Past Appointment Records
                 </h4>
                 <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                  Janji temu yang telah selesai dirawat atau dibatalkan akan tersimpan di sini.
+                  Appointments that have been completed or cancelled will appear here.
                 </p>
               </div>
             ) : (
