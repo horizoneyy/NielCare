@@ -105,30 +105,34 @@ export function Sidebar() {
   if (user?.role === "owner") themeColor = "purple";
 
   const colorStyles = {
-    green: {
-      text: "text-green-700",
-      bg: "bg-green-50",
-      hover: "hover:bg-green-50 hover:text-green-700",
-      gradient: "from-green-500 to-emerald-600",
-      textGradient: "from-green-600 to-emerald-600",
+    patient: {
+      text: "text-emerald-800 font-semibold",
+      bg: "bg-emerald-50/90 text-emerald-800 shadow-xs border border-emerald-100/80",
+      hover: "hover:bg-emerald-50/50 hover:text-emerald-700",
+      gradient: "from-emerald-600 to-teal-500",
+      textGradient: "from-emerald-700 to-teal-600",
+      indicator: "bg-emerald-600",
     },
-    blue: {
-      text: "text-blue-700",
-      bg: "bg-blue-50",
-      hover: "hover:bg-blue-50 hover:text-blue-700",
-      gradient: "from-blue-500 to-indigo-600",
-      textGradient: "from-blue-600 to-indigo-600",
+    doctor: {
+      text: "text-blue-800 font-semibold",
+      bg: "bg-blue-50/90 text-blue-800 shadow-xs border border-blue-100/80",
+      hover: "hover:bg-blue-50/50 hover:text-blue-700",
+      gradient: "from-blue-600 to-indigo-600",
+      textGradient: "from-blue-700 to-indigo-600",
+      indicator: "bg-blue-600",
     },
-    purple: {
-      text: "text-purple-700",
-      bg: "bg-purple-50",
-      hover: "hover:bg-purple-50 hover:text-purple-700",
-      gradient: "from-purple-500 to-fuchsia-600",
-      textGradient: "from-purple-600 to-fuchsia-600",
+    owner: {
+      text: "text-indigo-900 font-semibold",
+      bg: "bg-indigo-50/90 text-indigo-900 shadow-xs border border-indigo-100/80",
+      hover: "hover:bg-indigo-50/50 hover:text-indigo-700",
+      gradient: "from-slate-900 via-indigo-950 to-slate-900",
+      textGradient: "from-slate-900 to-indigo-700",
+      indicator: "bg-indigo-600",
     }
   };
 
-  const theme = colorStyles[themeColor as keyof typeof colorStyles];
+  const userRole = (user?.role || "patient") as keyof typeof colorStyles;
+  const theme = colorStyles[userRole] || colorStyles.patient;
 
   return (
     <>
@@ -145,44 +149,45 @@ export function Sidebar() {
       `}} />
 
       {/* MOBILE NAVBAR HEADER */}
-      <div className="md:hidden sticky top-0 z-40 w-full border-b border-slate-200 bg-white/80 backdrop-blur-lg px-4 h-16 flex items-center justify-between">
+      <div className="md:hidden sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-md px-4 h-16 flex items-center justify-between">
         <Link href={user ? `/${user.role}/dashboard` : "/login"} className="flex items-center gap-2">
-          <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${colorStyles.green.gradient} shadow-sm`}>
-            <Stethoscope className="h-4 w-4 text-white" />
+          <div className={`flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br ${theme.gradient} shadow-sm text-white`}>
+            <Stethoscope className="h-4 w-4" />
           </div>
-          <span className={`text-lg font-bold bg-gradient-to-r ${colorStyles.green.textGradient} bg-clip-text text-transparent`}>
+          <span className={`text-lg font-extrabold tracking-tight bg-gradient-to-r ${theme.textGradient} bg-clip-text text-transparent`}>
             NielCare
           </span>
         </Link>
         <div className="flex items-center gap-2">
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer">
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
       {/* SIDEBAR (DESKTOP) & MOBILE MENU */}
-      <aside className={`fixed top-0 left-0 z-50 h-screen w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 ease-in-out ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 flex flex-col`}>
+      <aside className={`fixed top-0 left-0 z-50 h-screen w-64 bg-white border-r border-slate-200/80 transform transition-transform duration-300 ease-in-out ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 flex flex-col justify-between`}>
         
-        {/* Sidebar Header */}
-        <div className="h-16 flex items-center px-6 border-b border-slate-100 mb-4">
-          <Link href={user ? `/${user.role}/dashboard` : "/login"} className="flex items-center gap-2 group w-full" onClick={() => setMobileMenuOpen(false)}>
-            <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${colorStyles.green.gradient} shadow-md group-hover:shadow-lg transition-all`}>
-              <Stethoscope className="h-4 w-4 text-white" />
-            </div>
-            <span className={`text-xl font-bold bg-gradient-to-r ${colorStyles.green.textGradient} bg-clip-text text-transparent`}>
-              NielCare
-            </span>
-          </Link>
-          <button onClick={() => setMobileMenuOpen(false)} className="md:hidden p-1 text-slate-400 hover:text-slate-600">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+        {/* Sidebar Header & Links */}
+        <div>
+          <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
+            <Link href={user ? `/${user.role}/dashboard` : "/login"} className="flex items-center gap-2.5 group w-full" onClick={() => setMobileMenuOpen(false)}>
+              <div className={`flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br ${theme.gradient} shadow-xs group-hover:scale-105 transition-transform text-white`}>
+                <Stethoscope className="h-4 w-4" />
+              </div>
+              <span className={`text-xl font-extrabold tracking-tight bg-gradient-to-r ${theme.textGradient} bg-clip-text text-transparent`}>
+                NielCare
+              </span>
+            </Link>
+            <button onClick={() => setMobileMenuOpen(false)} className="md:hidden p-1 text-slate-400 hover:text-slate-600 cursor-pointer">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
 
-        {/* Sidebar Links */}
-        <div className="flex-1 overflow-y-auto px-4 space-y-1">
-          <div className="mb-6 px-2">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Menu Utama</p>
+          <div className="p-4 space-y-1">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2.5">
+              Menu Utama
+            </p>
             {links.map((link) => {
               const isActive = pathname === link.href;
               const Icon = link.icon;
@@ -191,13 +196,16 @@ export function Sidebar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all mb-1 ${
+                  className={`relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all mb-1 cursor-pointer ${
                     isActive
-                      ? `${theme.bg} ${theme.text}`
-                      : `text-slate-600 ${theme.hover}`
+                      ? `${theme.bg}`
+                      : `text-slate-600 hover:text-slate-900 ${theme.hover}`
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
+                  {isActive && (
+                    <span className={`absolute left-0 top-2 bottom-2 w-1 rounded-r-full ${theme.indicator}`} />
+                  )}
+                  <Icon className={`h-4 w-4 ${isActive ? "" : "text-slate-400"}`} />
                   {link.label}
                 </Link>
               );
@@ -207,29 +215,30 @@ export function Sidebar() {
 
         {/* Sidebar Footer (User Profile) */}
         {user && (
-          <div className="p-4 border-t border-slate-100">
+          <div className="p-4 border-t border-slate-100 bg-slate-50/50">
             <div className="flex items-center gap-3 px-2 py-2 mb-2">
-              <Avatar className="h-10 w-10 border border-slate-100">
-                <AvatarFallback className={`bg-slate-100 ${theme.text} font-bold`}>
+              <Avatar className="h-9 w-9 border border-slate-200">
+                <AvatarFallback className="bg-slate-200/80 text-slate-700 font-bold text-xs">
                   {getInitials(user.full_name)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-slate-900 truncate">
+                <p className="text-xs font-bold text-slate-900 truncate">
                   {user.full_name}
                 </p>
-                <p className="text-xs text-slate-500 capitalize">
-                  {user.role === 'owner' ? 'Admin' : user.role === 'patient' ? 'Pasien' : 'Dokter'}
+                <p className="text-[11px] text-slate-500 capitalize">
+                  {user.role === 'owner' ? 'Administrator' : user.role === 'patient' ? 'Pasien Klinik' : 'Dokter Praktik'}
                 </p>
               </div>
             </div>
             <Button
               variant="ghost"
-              className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl"
+              size="sm"
+              className="w-full justify-start text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl text-xs font-semibold cursor-pointer"
               onClick={handleLogout}
             >
-              <LogOut className="h-4 w-4 mr-2" />
-              Keluar
+              <LogOut className="h-3.5 w-3.5 mr-2" />
+              Keluar Sesi
             </Button>
           </div>
         )}
