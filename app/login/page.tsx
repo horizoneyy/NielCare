@@ -4,7 +4,6 @@ import { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2, AlertCircle, ArrowRight, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -94,22 +93,26 @@ function LoginFormContent() {
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-slate-100 p-8 sm:p-10 relative">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-slate-600 mb-6 transition-colors"
+          className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-700 mb-6 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda
+          ← Kembali ke Beranda
         </Link>
 
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Masuk ke Akun Anda</h1>
+        {/* Brand Logo */}
+        <div className="text-center mb-6">
+          <span className="text-3xl font-extrabold tracking-tight font-sans">
+            <span className="text-slate-900">Niel</span>
+            <span className="text-emerald-600">Care</span>
+          </span>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight mt-3">Masuk ke Akun Anda</h1>
           <p className="text-xs text-slate-500 mt-1">
             Silakan masukkan email dan kata sandi Anda untuk melanjutkan
           </p>
         </div>
 
         {error && (
-          <div className="flex items-center gap-2 text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 mb-5 animate-fade-in">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>{error}</span>
+          <div className="text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 mb-5 font-medium">
+            {error}
           </div>
         )}
 
@@ -134,15 +137,15 @@ function LoginFormContent() {
                 placeholder="••••••••"
                 autoComplete="new-password"
                 {...register("password")}
-                className="w-full px-4 py-3 rounded-xl text-sm bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 pr-10 outline-none focus:bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition-all"
+                className="w-full px-4 py-3 rounded-xl text-sm bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 pr-16 outline-none focus:bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 hover:text-slate-600 px-1 py-0.5 cursor-pointer"
                 tabIndex={-1}
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? "Sembunyi" : "Lihat"}
               </button>
             </div>
             {errors.password && <p className="text-xs text-rose-500 mt-1">{errors.password.message}</p>}
@@ -151,17 +154,9 @@ function LoginFormContent() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm text-white bg-emerald-700 hover:bg-emerald-800 active:scale-98 transition-all shadow-md shadow-emerald-700/20 disabled:opacity-50 mt-2"
+            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white bg-emerald-600 hover:bg-emerald-700 active:scale-98 transition-all shadow-xs cursor-pointer disabled:opacity-50 mt-2"
           >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Memverifikasi...
-              </>
-            ) : (
-              <>
-                Masuk Sistem <ArrowRight className="h-4 w-4" />
-              </>
-            )}
+            {loading ? "Memverifikasi..." : "Masuk Sistem"}
           </button>
         </form>
       </div>
@@ -173,8 +168,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-          <Loader2 className="animate-spin text-emerald-700 w-8 h-8" />
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center text-sm font-semibold text-slate-500">
+          Memuat halaman masuk...
         </div>
       }
     >

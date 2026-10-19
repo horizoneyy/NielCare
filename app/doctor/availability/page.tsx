@@ -10,19 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getDayName } from "@/lib/utils/formatters";
 import type { DoctorSchedule } from "@/types";
-import {
-  Clock,
-  Plus,
-  Trash2,
-  CalendarCheck,
-  CalendarDays,
-  CheckCircle2,
-  XCircle,
-  ChevronRight,
-  ShieldAlert,
-  Loader2,
-  Sparkles,
-} from "lucide-react";
 
 export default function DoctorAvailabilityPage() {
   const supabase = createClient();
@@ -115,73 +102,47 @@ export default function DoctorAvailabilityPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50/60">
+      <div className="min-h-screen bg-slate-50">
         <Sidebar />
         <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
-          <div className="h-6 bg-slate-200/80 rounded w-48 mb-4"></div>
-          <div className="h-10 bg-slate-200/60 rounded-xl w-72 mb-6"></div>
-          <div className="h-64 bg-white rounded-2xl border border-slate-200/80 mb-6"></div>
-          <div className="h-48 bg-white rounded-2xl border border-slate-200/80"></div>
+          <div className="h-8 bg-slate-200 rounded w-72 mb-6"></div>
+          <div className="h-64 bg-white rounded-xl border border-slate-200 mb-6"></div>
+          <div className="h-48 bg-white rounded-xl border border-slate-200"></div>
         </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/60 text-slate-800 font-sans antialiased">
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased">
       <Sidebar />
 
       <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb Navigation */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-4 font-medium">
-          <Link href="/doctor/dashboard" className="hover:text-slate-600 transition-colors">
-            Dashboard
-          </Link>
-          <ChevronRight className="w-3 h-3 text-slate-300" />
-          <span className="text-slate-700 font-semibold">Atur Ketersediaan Praktik</span>
-        </div>
-
-        {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/70 mb-8">
+        {/* Top Header (Clean title, no top badge, no subtitle, no icons) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/60">
-                <Clock className="w-3.5 h-3.5 text-blue-600" />
-                Manajemen Waktu &amp; Shift Praktik
-              </span>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
               Ketersediaan Jadwal Praktik
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Tentukan hari, rentang jam praktik, dan durasi tiap sesi pasien untuk booking otomatis
-            </p>
           </div>
 
           <Link href="/doctor/schedule">
             <Button
               variant="outline"
               size="sm"
-              className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-xl shadow-xs transition-all cursor-pointer text-xs h-10 px-4"
+              className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-lg text-xs h-10 px-4"
             >
-              <CalendarCheck className="w-4 h-4 mr-1.5 text-blue-600" />
               Cek Kalender Jadwal
             </Button>
           </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Form Tambah Jadwal (Left 1 col or Top on mobile) */}
+          {/* Form Tambah Jadwal */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] sticky top-6">
-              <div className="flex items-center gap-2 pb-3 border-b border-slate-100 mb-4">
-                <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-                  <Plus className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900">Tambah Hari Praktik</h3>
-                  <p className="text-[11px] text-slate-500">Buka slot reservasi baru</p>
-                </div>
+            <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
+              <div className="pb-3 border-b border-slate-100 mb-4">
+                <h3 className="text-sm font-bold text-slate-900">Tambah Hari Praktik</h3>
               </div>
 
               <div className="space-y-4">
@@ -191,7 +152,7 @@ export default function DoctorAvailabilityPage() {
                     value={newSchedule.day_of_week}
                     onValueChange={(v) => setNewSchedule((p) => ({ ...p, day_of_week: v }))}
                   >
-                    <SelectTrigger className="rounded-xl border-slate-200 text-xs sm:text-sm h-10">
+                    <SelectTrigger className="rounded-lg border-slate-200 text-xs sm:text-sm h-10">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -214,10 +175,9 @@ export default function DoctorAvailabilityPage() {
                     onChange={(e) =>
                       setNewSchedule((p) => ({ ...p, slot_duration_minutes: e.target.value }))
                     }
-                    className="rounded-xl border-slate-200 text-xs sm:text-sm h-10"
+                    className="rounded-lg border-slate-200 text-xs sm:text-sm h-10"
                     placeholder="30"
                   />
-                  <p className="text-[10px] text-slate-400">Umumnya 30 atau 45 menit per pasien</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -229,7 +189,7 @@ export default function DoctorAvailabilityPage() {
                       onChange={(e) =>
                         setNewSchedule((p) => ({ ...p, start_time: e.target.value }))
                       }
-                      className="rounded-xl border-slate-200 text-xs h-10"
+                      className="rounded-lg border-slate-200 text-xs h-10"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -240,7 +200,7 @@ export default function DoctorAvailabilityPage() {
                       onChange={(e) =>
                         setNewSchedule((p) => ({ ...p, end_time: e.target.value }))
                       }
-                      className="rounded-xl border-slate-200 text-xs h-10"
+                      className="rounded-lg border-slate-200 text-xs h-10"
                     />
                   </div>
                 </div>
@@ -248,47 +208,28 @@ export default function DoctorAvailabilityPage() {
                 <Button
                   onClick={addSchedule}
                   disabled={saving}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold h-10 shadow-xs transition-all cursor-pointer mt-2"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold h-10 mt-2"
                 >
-                  {saving ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> Menyimpan...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-3.5 h-3.5 mr-1.5" /> Pasang Jadwal Praktik
-                    </>
-                  )}
+                  {saving ? "Menyimpan..." : "Pasang Jadwal Praktik"}
                 </Button>
               </div>
             </div>
           </div>
 
-          {/* Daftar Jadwal Saat Ini (Right 2 cols) */}
+          {/* Daftar Jadwal */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-                    <CalendarDays className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">Jadwal Praktik Aktif</h3>
-                    <p className="text-[11px] text-slate-500">
-                      Total {schedules.length} slot hari terdaftar
-                    </p>
-                  </div>
-                </div>
+            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs">
+              <div className="pb-4 border-b border-slate-100 mb-5">
+                <h3 className="text-sm font-bold text-slate-900">
+                  Jadwal Praktik Aktif ({schedules.length} Slot)
+                </h3>
               </div>
 
               {schedules.length === 0 ? (
-                <div className="text-center py-16 px-4 bg-slate-50/70 border border-dashed border-slate-200 rounded-xl">
-                  <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3">
-                    <Clock className="w-6 h-6" />
-                  </div>
+                <div className="text-center py-16 px-4 bg-slate-50 border border-dashed border-slate-200 rounded-lg">
                   <h4 className="text-sm font-bold text-slate-800">Belum Ada Jadwal Didaftarkan</h4>
                   <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                    Pasien tidak dapat melakukan reservasi jika jadwal ketersediaan Anda masih kosong. Silakan gunakan formulir di samping.
+                    Pasien tidak dapat melakukan reservasi jika jadwal ketersediaan Anda masih kosong.
                   </p>
                 </div>
               ) : (
@@ -296,44 +237,30 @@ export default function DoctorAvailabilityPage() {
                   {schedules.map((s) => (
                     <div
                       key={s.id}
-                      className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border transition-all ${
+                      className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg border transition-all ${
                         s.is_available
-                          ? "bg-white border-slate-200/90 shadow-xs hover:border-blue-300"
-                          : "bg-slate-50/70 border-slate-200 opacity-60"
+                          ? "bg-white border-slate-200 shadow-xs"
+                          : "bg-slate-50 border-slate-200 opacity-60"
                       }`}
                     >
-                      <div className="flex items-center gap-3.5">
-                        <div
-                          className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold text-xs flex-shrink-0 ${
-                            s.is_available
-                              ? "bg-blue-50 text-blue-700 border border-blue-200/60"
-                              : "bg-slate-100 text-slate-500 border border-slate-200"
-                          }`}
-                        >
-                          {getDayName(s.day_of_week).slice(0, 3)}
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-sm text-slate-900">
+                            {getDayName(s.day_of_week)}
+                          </h4>
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded ${
+                              s.is_available
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : "bg-slate-200 text-slate-600"
+                            }`}
+                          >
+                            {s.is_available ? "Buka Praktik" : "Nonaktif"}
+                          </span>
                         </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-bold text-sm text-slate-900">
-                              {getDayName(s.day_of_week)}
-                            </h4>
-                            <span
-                              className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                                s.is_available
-                                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
-                                  : "bg-slate-200 text-slate-600"
-                              }`}
-                            >
-                              {s.is_available ? "Buka Praktik" : "Nonaktif"}
-                            </span>
-                          </div>
-                          <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5">
-                            <Clock className="w-3 h-3 text-slate-400" />
-                            {s.start_time.slice(0, 5)} – {s.end_time.slice(0, 5)} WIB
-                            <span className="text-slate-300">•</span>
-                            <span>{s.slot_duration_minutes} mnt / pasien</span>
-                          </p>
-                        </div>
+                        <p className="text-xs text-slate-600 mt-1">
+                          {s.start_time.slice(0, 5)} – {s.end_time.slice(0, 5)} WIB • {s.slot_duration_minutes} mnt / pasien
+                        </p>
                       </div>
 
                       <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -341,7 +268,7 @@ export default function DoctorAvailabilityPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => toggleAvailability(s.id, s.is_available)}
-                          className={`rounded-xl text-xs font-semibold h-8 px-3 ${
+                          className={`rounded-lg text-xs font-semibold h-8 px-3 ${
                             s.is_available
                               ? "border-amber-200 text-amber-700 hover:bg-amber-50"
                               : "border-emerald-200 text-emerald-700 hover:bg-emerald-50"
@@ -351,11 +278,11 @@ export default function DoctorAvailabilityPage() {
                         </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
+                          size="sm"
                           onClick={() => deleteSchedule(s.id)}
-                          className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                          className="h-8 px-2.5 text-xs text-red-600 hover:bg-red-50 rounded-lg font-semibold"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          Hapus
                         </Button>
                       </div>
                     </div>

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2, AlertCircle, ArrowRight, Smile, ArrowLeft, UserCheck, UserPlus, Phone } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -144,21 +143,18 @@ export default function RegisterPage() {
       <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-8 relative">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-slate-600 mb-6 transition-colors"
+          className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-700 mb-6 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda
+          ← Kembali ke Beranda
         </Link>
 
         {/* Brand Header */}
         <div className="mb-6">
-          <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-9 h-9 rounded-xl bg-emerald-700 flex items-center justify-center text-white font-bold shadow-sm">
-              <Smile className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="font-bold text-slate-900 text-lg">NielCare</span>
-              <span className="font-light text-emerald-700 text-lg ml-1">Dental</span>
-            </div>
+          <div className="mb-3">
+            <span className="text-3xl font-extrabold tracking-tight font-sans">
+              <span className="text-slate-900">Niel</span>
+              <span className="text-emerald-600">Care</span>
+            </span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Pendaftaran & Masuk Pasien</h1>
           <p className="text-xs text-slate-500 mt-1">
@@ -167,7 +163,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Tab Selector: Pasien Baru vs Pasien Lama */}
-        <div className="grid grid-cols-2 p-1.5 bg-slate-100 rounded-2xl mb-6">
+        <div className="grid grid-cols-2 p-1.5 bg-slate-100 rounded-xl mb-6">
           <button
             type="button"
             onClick={() => {
@@ -175,14 +171,13 @@ export default function RegisterPage() {
               setErrorMsg("");
               setSuccessNotice("");
             }}
-            className={`py-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+            className={`py-2.5 text-xs sm:text-sm font-bold rounded-lg transition-all text-center cursor-pointer ${
               activeTab === "new"
-                ? "bg-white text-emerald-800 shadow-sm"
+                ? "bg-white text-emerald-800 shadow-xs"
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            <UserPlus className="w-4 h-4" />
-            <span>Pasien Baru</span>
+            Pasien Baru
           </button>
 
           <button
@@ -192,29 +187,26 @@ export default function RegisterPage() {
               setErrorMsg("");
               setSuccessNotice("");
             }}
-            className={`py-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+            className={`py-2.5 text-xs sm:text-sm font-bold rounded-lg transition-all text-center cursor-pointer ${
               activeTab === "existing"
-                ? "bg-white text-emerald-800 shadow-sm"
+                ? "bg-white text-emerald-800 shadow-xs"
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            <UserCheck className="w-4 h-4" />
-            <span>Pasien Lama</span>
+            Pasien Lama
           </button>
         </div>
 
         {/* Alerts */}
         {errorMsg && (
-          <div className="flex items-center gap-2 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-2xl p-3.5 mb-5">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>{errorMsg}</span>
+          <div className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-3.5 mb-5 font-medium">
+            {errorMsg}
           </div>
         )}
 
         {successNotice && (
-          <div className="flex items-center gap-2 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-2xl p-3.5 mb-5">
-            <UserCheck className="h-4 w-4 shrink-0 text-emerald-600" />
-            <span>{successNotice}</span>
+          <div className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 mb-5 font-medium">
+            {successNotice}
           </div>
         )}
 
@@ -270,17 +262,14 @@ export default function RegisterPage() {
               <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
                 Nomor HP (WhatsApp) *
               </label>
-              <div className="relative">
-                <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="tel"
-                  required
-                  value={newPhone}
-                  onChange={(e) => setNewPhone(e.target.value)}
-                  placeholder="08123456789"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all text-slate-800"
-                />
-              </div>
+              <input
+                type="tel"
+                required
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+                placeholder="08123456789"
+                className="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all text-slate-800"
+              />
               <p className="text-[10px] text-slate-400 mt-1">
                 Nomor ini langsung terdaftar sebagai identitas unik Anda di klinik.
               </p>
@@ -290,17 +279,9 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs sm:text-sm font-bold rounded-2xl transition-all shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Mendaftarkan Pasien...
-                  </>
-                ) : (
-                  <>
-                    Daftar & Masuk ke Dashboard <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
+                {loading ? "Mendaftarkan Pasien..." : "Daftar & Masuk ke Dashboard"}
               </button>
             </div>
           </form>
@@ -315,17 +296,14 @@ export default function RegisterPage() {
               <label className="text-[11px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">
                 Masukkan Nomor HP Terdaftar *
               </label>
-              <div className="relative">
-                <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="tel"
-                  required
-                  value={existingPhone}
-                  onChange={(e) => setExistingPhone(e.target.value)}
-                  placeholder="Contoh: 08123456789"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all text-slate-800"
-                />
-              </div>
+              <input
+                type="tel"
+                required
+                value={existingPhone}
+                onChange={(e) => setExistingPhone(e.target.value)}
+                placeholder="Contoh: 08123456789"
+                className="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 focus:outline-none focus:border-emerald-600 focus:bg-white transition-all text-slate-800"
+              />
               <p className="text-[11px] text-slate-500 mt-2 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
                 Sistem mencari nomor Anda di database dan data lama Anda akan terisi otomatis, tanpa perlu daftar nama dan tanpa login kata sandi.
               </p>
@@ -335,17 +313,9 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white text-xs sm:text-sm font-bold rounded-2xl transition-all shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-50"
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Mencari Data Pasien...
-                  </>
-                ) : (
-                  <>
-                    Masuk ke Dashboard <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
+                {loading ? "Mencari Data Pasien..." : "Masuk ke Dashboard"}
               </button>
             </div>
           </form>

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Sidebar } from "@/components/shared/Sidebar";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +13,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils/formatters";
 import type { Doctor } from "@/types";
-import { Loader2, Plus, Stethoscope, Eye, EyeOff, ArrowLeft, CheckCircle2, ShieldCheck, Mail, Phone, Award } from "lucide-react";
 
 const SPECIALIZATIONS = [
   { id: "General Dentist", label: "General Dentist (Dokter Gigi Umum)", title: "" },
@@ -89,7 +87,6 @@ export default function OwnerDoctorsPage() {
         years_experience: "3",
       });
 
-      // Refresh data dokter
       const refreshRes = await fetch("/api/doctors");
       if (refreshRes.ok) {
         const updated = await refreshRes.json();
@@ -104,13 +101,13 @@ export default function OwnerDoctorsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50/60">
+      <div className="min-h-screen bg-slate-50">
         <Sidebar />
         <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
-          <div className="h-8 bg-slate-200/80 rounded-xl w-60 mb-6"></div>
+          <div className="h-8 bg-slate-200 rounded w-60 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-44 bg-white rounded-2xl border border-slate-100 p-5"></div>
+              <div key={i} className="h-44 bg-white rounded-xl border border-slate-200 p-5"></div>
             ))}
           </div>
         </main>
@@ -119,38 +116,26 @@ export default function OwnerDoctorsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/60 text-slate-800 font-sans antialiased">
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased">
       <Sidebar />
 
       <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/70 mb-8">
+        {/* Header Section (Clean title, no subtitle, no icons) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-8">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Link
-                href="/owner/dashboard"
-                className="inline-flex items-center text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors"
-              >
-                <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Dashboard
-              </Link>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
               Manajemen Tim Medis &amp; Dokter
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Kelola profil, spesialisasi keahlian klinis, dan akun portal dokter klinik
-            </p>
           </div>
 
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl shadow-xs hover:shadow transition-all cursor-pointer">
-                <Plus className="h-4 w-4 mr-2" />
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs h-10 px-4">
                 Tambah Dokter Baru
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-6">
+            <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto rounded-xl p-6">
               <DialogHeader>
                 <DialogTitle className="text-lg font-bold text-slate-900">Pendaftaran Akun Dokter</DialogTitle>
                 <DialogDescription className="text-xs text-slate-500">
@@ -160,7 +145,7 @@ export default function OwnerDoctorsPage() {
 
               <div className="space-y-3.5 mt-4">
                 {error && (
-                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-medium text-rose-700">
+                  <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs font-medium text-rose-700">
                     {error}
                   </div>
                 )}
@@ -173,7 +158,7 @@ export default function OwnerDoctorsPage() {
                       placeholder="drg. Budi Santoso"
                       value={form.full_name}
                       onChange={(e) => setForm((p) => ({ ...p, full_name: e.target.value }))}
-                      className="rounded-xl border-slate-200 text-xs h-9"
+                      className="rounded-lg border-slate-200 text-xs h-9"
                     />
                   </div>
                   <div className="space-y-1">
@@ -183,7 +168,7 @@ export default function OwnerDoctorsPage() {
                       placeholder="dr.budi"
                       value={form.username}
                       onChange={(e) => setForm((p) => ({ ...p, username: e.target.value }))}
-                      className="rounded-xl border-slate-200 text-xs h-9"
+                      className="rounded-lg border-slate-200 text-xs h-9"
                     />
                   </div>
                 </div>
@@ -196,7 +181,7 @@ export default function OwnerDoctorsPage() {
                     placeholder="dr.budi@nielcare.test"
                     value={form.email}
                     onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-                    className="rounded-xl border-slate-200 text-xs h-9"
+                    className="rounded-lg border-slate-200 text-xs h-9"
                   />
                 </div>
 
@@ -207,7 +192,7 @@ export default function OwnerDoctorsPage() {
                     placeholder="08123456789"
                     value={form.phone}
                     onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
-                    className="rounded-xl border-slate-200 text-xs h-9"
+                    className="rounded-lg border-slate-200 text-xs h-9"
                   />
                 </div>
 
@@ -217,10 +202,10 @@ export default function OwnerDoctorsPage() {
                     value={form.specialization}
                     onValueChange={(v) => setForm((p) => ({ ...p, specialization: v }))}
                   >
-                    <SelectTrigger className="w-full rounded-xl border-slate-200 text-xs h-9">
+                    <SelectTrigger className="w-full rounded-lg border-slate-200 text-xs h-9">
                       <SelectValue placeholder="Pilih Spesialisasi" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-xl">
+                    <SelectContent className="rounded-lg">
                       {SPECIALIZATIONS.map((spec) => (
                         <SelectItem key={spec.id} value={spec.id} className="text-xs">
                           {spec.label}
@@ -237,7 +222,7 @@ export default function OwnerDoctorsPage() {
                     value={form.bio}
                     onChange={(e) => setForm((p) => ({ ...p, bio: e.target.value }))}
                     rows={2}
-                    className="rounded-xl border-slate-200 text-xs resize-none"
+                    className="rounded-lg border-slate-200 text-xs resize-none"
                   />
                 </div>
 
@@ -252,7 +237,7 @@ export default function OwnerDoctorsPage() {
                         const v = parseInt(e.target.value) || 0;
                         setForm((p) => ({ ...p, years_experience: Math.max(0, v).toString() }));
                       }}
-                      className="rounded-xl border-slate-200 text-xs h-9"
+                      className="rounded-lg border-slate-200 text-xs h-9"
                     />
                   </div>
                   <div className="space-y-1">
@@ -264,14 +249,14 @@ export default function OwnerDoctorsPage() {
                         placeholder="••••••••"
                         value={form.password}
                         onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
-                        className="rounded-xl border-slate-200 text-xs h-9 pr-8"
+                        className="rounded-lg border-slate-200 text-xs h-9 pr-14"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 hover:text-slate-800"
                       >
-                        {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                        {showPassword ? "Tutup" : "Lihat"}
                       </button>
                     </div>
                   </div>
@@ -287,16 +272,9 @@ export default function OwnerDoctorsPage() {
                     !form.password ||
                     !form.specialization
                   }
-                  className="w-full mt-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs h-10 transition-all cursor-pointer"
+                  className="w-full mt-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs h-10"
                 >
-                  {saving ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      Mendaftarkan Dokter...
-                    </>
-                  ) : (
-                    "Buat Akun Dokter"
-                  )}
+                  {saving ? "Mendaftarkan Dokter..." : "Buat Akun Dokter"}
                 </Button>
               </div>
             </DialogContent>
@@ -304,7 +282,7 @@ export default function OwnerDoctorsPage() {
         </div>
 
         {/* Doctors Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {doctors.map((d) => {
             const specData = SPECIALIZATIONS.find((s) => s.id === d.specialization);
             const title = specData?.title ? `, ${specData.title}` : "";
@@ -312,13 +290,13 @@ export default function OwnerDoctorsPage() {
             return (
               <div
                 key={d.id}
-                className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.04)] hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-center gap-3.5">
-                      <Avatar className="h-12 w-12 border border-slate-100 shadow-xs">
-                        <AvatarFallback className="bg-indigo-50 text-indigo-700 font-bold text-sm">
+                      <Avatar className="h-12 w-12 border border-slate-200">
+                        <AvatarFallback className="bg-blue-50 text-blue-700 font-bold text-sm">
                           {d.user ? getInitials(d.user.full_name) : "DR"}
                         </AvatarFallback>
                       </Avatar>
@@ -328,14 +306,13 @@ export default function OwnerDoctorsPage() {
                           {d.user?.full_name}
                           {title}
                         </h3>
-                        <span className="inline-flex items-center gap-1 mt-0.5 text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100/60">
+                        <span className="inline-block mt-0.5 text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                           {d.specialization}
                         </span>
                       </div>
                     </div>
 
-                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                       Aktif Praktik
                     </span>
                   </div>
@@ -347,19 +324,16 @@ export default function OwnerDoctorsPage() {
 
                 <div className="pt-3.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
                   <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1 font-medium">
-                      <Award className="w-3.5 h-3.5 text-amber-500" />
+                    <span className="font-medium text-slate-700">
                       {d.years_experience} Tahun Pengalaman
                     </span>
-                    <span className="flex items-center gap-1 text-slate-400">
-                      <Mail className="w-3.5 h-3.5" />
+                    <span className="text-slate-400">
                       {d.user?.email}
                     </span>
                   </div>
 
                   {d.user?.phone && (
-                    <span className="flex items-center gap-1 text-slate-400">
-                      <Phone className="w-3.5 h-3.5" />
+                    <span className="text-slate-500 font-mono">
                       {d.user.phone}
                     </span>
                   )}
